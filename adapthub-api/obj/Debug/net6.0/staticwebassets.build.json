@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "a6wpZYTvX/dUjeF9pRUnF2FcUTqtV73E9dKNUZYWHL8=",
+  "Source": "adapthub-api",
+  "BasePath": "_content/adapthub-api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -8,6 +8,7 @@ using System.Text;
 
 namespace adapthub_api.Services
 {
+    //TODO: refactor this class
     public class UserService : IUserService
     {
         private UserManager<User> _userManger;

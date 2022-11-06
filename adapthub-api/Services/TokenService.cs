@@ -6,6 +6,7 @@ using System.Text;
 
 namespace adapthub_api.Services
 {
+    //TODO: create middleware with usage of this service
     public class TokenService : ITokenService
     {
         private const double EXPIRY_DURATION_MINUTES = 30;

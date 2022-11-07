@@ -3,6 +3,8 @@
     public class Vacancy
     {
         public int Id { get; set; }
+
+        public String Title { get; set; }
         public Organization Organization { get; set; }
         public string Status { get; set; }
         public int? FoundUserId { get; set; }

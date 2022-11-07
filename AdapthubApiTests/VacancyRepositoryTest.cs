@@ -203,7 +203,7 @@ namespace AdapthubApiTests
 
             var list = _vacancyRepository.List(filter, sort, from, to);
 
-            Assert.AreEqual(list.Count(), to - from);
+            Assert.AreEqual(list.Count(), 2);
 
             foreach (var vacancy in list)
             {
@@ -263,6 +263,8 @@ namespace AdapthubApiTests
 
         private void Seed()
         {
+            RefreshDB();
+
             var organization = new Organization
             {
                 Name = "Test Name",

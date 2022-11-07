@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "adapthub-api", "adapthub-api\adapthub-api.csproj", "{30468C94-8678-4CCA-8BB1-440538BA1659}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "adapthub-api", "adapthub-api\adapthub-api.csproj", "{30468C94-8678-4CCA-8BB1-440538BA1659}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdapthubApiTests", "AdapthubApiTests\AdapthubApiTests.csproj", "{80BF4196-E17E-466F-B056-4EC86A7F31C4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{30468C94-8678-4CCA-8BB1-440538BA1659} = {30468C94-8678-4CCA-8BB1-440538BA1659}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{30468C94-8678-4CCA-8BB1-440538BA1659}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30468C94-8678-4CCA-8BB1-440538BA1659}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30468C94-8678-4CCA-8BB1-440538BA1659}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80BF4196-E17E-466F-B056-4EC86A7F31C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BF4196-E17E-466F-B056-4EC86A7F31C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BF4196-E17E-466F-B056-4EC86A7F31C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BF4196-E17E-466F-B056-4EC86A7F31C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

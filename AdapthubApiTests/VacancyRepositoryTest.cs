@@ -6,6 +6,7 @@ using adapthub_api.ViewModels.Vacancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SendGrid.Helpers.Errors.Model;
+using System.Data.Entity;
 using System.Data.SqlClient;
 
 namespace AdapthubApiTests
@@ -69,7 +70,7 @@ namespace AdapthubApiTests
         }
 
         [Test]
-        public void TestGetByIdWorksCorrectly()
+        public void TestFindWorksCorrectly()
         {
             var vacancy = new Vacancy
             {
@@ -94,7 +95,7 @@ namespace AdapthubApiTests
         }
 
         [Test]
-        public void TestGetByIdReturnsNullWhenModelNotFound()
+        public void TestFindReturnsNullWhenModelNotFound()
         {
             var foundVacancy = _vacancyRepository.Find(1);
 
@@ -211,7 +212,7 @@ namespace AdapthubApiTests
         }
 
         [Test]
-        public void TestListWorksCorreclty()
+        public void TestSortWorksCorreclty()
         {
             var vacancies = SeedVacancies();
 
@@ -270,6 +271,17 @@ namespace AdapthubApiTests
             };
 
             _dataContext.Organizations.Add(organization);
+            _dataContext.SaveChanges();
+        }
+
+        private void RefreshDB()
+        {
+            foreach (var entity in _dataContext.Vacancies)
+                _dataContext.Vacancies.Remove(entity);
+
+            foreach (var entity in _dataContext.Organizations)
+                _dataContext.Organizations.Remove(entity);
+
             _dataContext.SaveChanges();
         }
 

@@ -2,8 +2,8 @@
 {
     public class FilterVacancyViewModel
     {
-        public string? Status;
+        public string? Status { get; set; }
 
-        public int? OrganizationId;
+        public int? OrganizationId { get; set; }
     }
 }

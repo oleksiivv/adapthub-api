@@ -2,5 +2,6 @@
 {
     public class FilterOrganizationViewModel
     {
+        public string? Name { get; set; }
     }
 }

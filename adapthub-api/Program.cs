@@ -27,7 +27,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddTransient<IMailService, MailService>();
 
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub"));
+{
+    options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub");
+});
 
 builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>();

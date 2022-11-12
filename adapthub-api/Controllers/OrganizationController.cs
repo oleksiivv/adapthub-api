@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels.Organization;
+using adapthub_api.Models;
+using adapthub_api.Repositories;
+using adapthub_api.ViewModels.JobRequest;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,38 +13,41 @@ namespace adapthub_api.Controllers
     [ApiController]
     public class OrganizationController : ControllerBase
     {
-        private readonly IOrganizationRepository organizationRepository;
+        private readonly IOrganizationRepository _organizationRepository;
 
         public OrganizationController(IOrganizationRepository organizationRepository)
         {
-            this.organizationRepository = organizationRepository;
+            _organizationRepository = organizationRepository;
         }
 
         [HttpGet]
-        public IEnumerable<string> Get([FromBody] FilterOrganizationViewModel data, int limit = 5, int offset = 0, string sort = "Id")
+        public IEnumerable<Organization> Get([FromBody] FilterOrganizationViewModel filter, int from = 0, int to = 10, string sort = "Id")
         {
-            return new string[] { "value1", "value2" };
+            return _organizationRepository.List(filter, sort, from, to);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Organization Get(int id)
         {
-            return "value";
+            return _organizationRepository.Find(id);
         }
 
         [HttpPost]
-        public void Post([FromBody] CreateOrganizationViewModel data)
+        public Organization Post([FromBody] CreateOrganizationViewModel data)
         {
+            return _organizationRepository.Create(data);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UpdateOrganizationViewModel data)
+        public Organization Put([FromBody] UpdateOrganizationViewModel data)
         {
+            return _organizationRepository.Update(data);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public Organization Delete(int id)
         {
+            return _organizationRepository.Delete(id);
         }
     }
 }

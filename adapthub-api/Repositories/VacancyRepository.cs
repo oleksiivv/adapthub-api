@@ -16,12 +16,18 @@ namespace adapthub_api.Repositories
 
         public Vacancy Find(int id)
         {
-            return _data.Vacancies.Find(id);
+            var vacancy = _data.Vacancies.Find(id);
+
+            _data.Entry(vacancy).Reference("Organization").Load();
+
+            return vacancy;
         }
 
         public IEnumerable<Vacancy> List(FilterVacancyViewModel filter, string sort, int from, int to)
         {
             var vacancies = _data.Vacancies.Where(x => (x.Status == filter.Status || filter.Status == null) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null)).Skip(from).Take(to - from);
+
+            _data.Entry(vacancies).Reference("Organization").Load();
 
             switch (sort)
             {
@@ -86,6 +92,11 @@ namespace adapthub_api.Repositories
             if (data.Data != null)
             {
                 vacancy.Data = data.Data;
+            }
+
+            if (data.JobRequestId != null)
+            {
+                vacancy.JobRequestId = data.JobRequestId;
             }
 
             _data.Update(vacancy);

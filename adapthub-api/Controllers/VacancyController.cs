@@ -1,4 +1,6 @@
-﻿using adapthub_api.Repositories.Interfaces;
+﻿using adapthub_api.Models;
+using adapthub_api.Repositories;
+using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Mvc;
@@ -11,39 +13,41 @@ namespace adapthub_api.Controllers
     [ApiController]
     public class VacancyController : ControllerBase
     {
-        private readonly IVacancyRepository vacancyRepository;
+        private readonly IVacancyRepository _vacancyRepository;
 
         public VacancyController(IVacancyRepository vacancyRepository)
         {
-            this.vacancyRepository = vacancyRepository;
+            _vacancyRepository = vacancyRepository;
         }
 
-        // GET: api/<VacancyController>
         [HttpGet]
-        public IEnumerable<string> Get([FromBody] FilterVacancyViewModel data, int limit = 5, int offset = 0, string sort = "Id")
+        public IEnumerable<Vacancy> Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id")
         {
-            return new string[] { "value1", "value2" };
+            return _vacancyRepository.List(filter, sort, from, to);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Vacancy Get(int id)
         {
-            return "value";
+            return _vacancyRepository.Find(id);
         }
 
         [HttpPost]
-        public void Post([FromBody] CreateVacancyViewModel data)
+        public Vacancy Post([FromBody] CreateVacancyViewModel data)
         {
+            return _vacancyRepository.Create(data);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UpdateVacancyViewModel data)
+        public Vacancy Put([FromBody] UpdateVacancyViewModel data)
         {
+            return _vacancyRepository.Update(data);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public Vacancy Delete(int id)
         {
+            return _vacancyRepository.Delete(id);
         }
     }
 }

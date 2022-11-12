@@ -1,4 +1,5 @@
-﻿using adapthub_api.Repositories.Interfaces;
+﻿using adapthub_api.Models;
+using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels.JobRequest;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +11,41 @@ namespace adapthub_api.Controllers
     [ApiController]
     public class JobRequestController : ControllerBase
     {
-        private readonly IUserRepository jobRequestRepossitory;
+        private readonly IJobRequestRepository _jobRequestRepository;
 
         public JobRequestController(IJobRequestRepository jobRequestRepository)
         {
-            this.jobRequestRepossitory = jobRequestRepossitory;
+            _jobRequestRepository = jobRequestRepository;
         }
 
         [HttpGet]
-        public IEnumerable<string> Get([FromBody] FilterJobRequestViewModel filter, int limit = 5, int offset = 0, string sort = "Id")
+        public IEnumerable<JobRequest> Get([FromBody] FilterJobRequestViewModel filter, int from = 0, int to = 10, string sort = "Id")
         {
-            return new string[] { "value1", "value2" };
+            return _jobRequestRepository.List(filter, sort, from, to);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public JobRequest Get(int id)
         {
-            return "value";
+            return _jobRequestRepository.Find(id);
         }
 
         [HttpPost]
-        public void Post([FromBody] CreateJobRequestViewModel data)
+        public JobRequest Post([FromBody] CreateJobRequestViewModel data)
         {
+            return _jobRequestRepository.Create(data);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UpdateJobRequestViewModel data)
+        public JobRequest Put([FromBody] UpdateJobRequestViewModel data)
         {
+            return _jobRequestRepository.Update(data);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public JobRequest Delete(int id)
         {
+            return _jobRequestRepository.Delete(id);
         }
     }
 }

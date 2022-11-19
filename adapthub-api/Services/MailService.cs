@@ -16,7 +16,7 @@ namespace adapthub_api.Services
         {
             var apiKey = _configuration["SendGridAPIKey"];
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("oleksii.petrochenko.pz.2019@lpnu.ua", "Adaphub Support");
+            var from = new EmailAddress("oleksii.petrochenko.pz.2019@lpnu.ua", "Adapthub Support");
             var to = new EmailAddress(toEmail);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, content, content);
             var response = await client.SendEmailAsync(msg);

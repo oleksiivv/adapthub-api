@@ -18,10 +18,10 @@ namespace adapthub_api.Controllers
     public class AuthController : ControllerBase
     {
 
-        private IUserService _userService;
+        private IAuthService _userService;
         private IMailService _mailService;
         private IConfiguration _configuration;
-        public AuthController(IUserService userService, IMailService mailService, IConfiguration configuration)
+        public AuthController(IAuthService userService, IMailService mailService, IConfiguration configuration)
         {
             _userService = userService;
             _mailService = mailService;
@@ -30,7 +30,7 @@ namespace adapthub_api.Controllers
 
         // /api/auth/register
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterViewModel model)
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterCustomerViewModel model)
         {
             if(ModelState.IsValid)
             {
@@ -55,7 +55,7 @@ namespace adapthub_api.Controllers
 
                 if (result.IsSuccess)
                 {
-                    await _mailService.SendEmailAsync(model.Email, "New login", "<h1>Hey!, new login to your account noticed</h1><p>New login to your account at " + DateTime.Now + "</p>");
+                    await _mailService.SendEmailAsync(model.Email, "Новий вхід", "<h1>Привіт! Ми помітили новий вхід на ваш акаунт!</h1><p>Сталося це " + DateTime.Now + "</p>");
                     return Ok(result);
                 }
 
@@ -99,7 +99,7 @@ namespace adapthub_api.Controllers
 
         // api/auth/resetpassword
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromForm]ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword([FromForm]ResetCustomerPasswordViewModel model)
         {
             if(ModelState.IsValid)
             {

@@ -13,7 +13,7 @@ namespace AdapthubApiTests
 {
     public class VacancyRepositoryTest
     {
-        private VacancyRepository _vacancyRepository;
+        /*private VacancyRepository _vacancyRepository;
 
         private DataContext _dataContext;
 
@@ -269,7 +269,6 @@ namespace AdapthubApiTests
             {
                 Name = "Test Name",
                 SiteLink = "youtube.com",
-                User = new User(),
             };
 
             _dataContext.Organizations.Add(organization);
@@ -333,5 +332,6 @@ namespace AdapthubApiTests
 
             return _dataContext.Vacancies;
         }
+        */
     }
 }

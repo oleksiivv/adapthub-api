@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace adapthub_api.Services
 {
-    public interface IUserService
+    public interface IAuthService
     {
-        Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model);
+        Task<UserManagerResponse> RegisterUserAsync(RegisterCustomerViewModel model);
 
         Task<UserManagerResponse> LoginUserAsync(LoginViewModel model);
 
@@ -24,6 +24,6 @@ namespace adapthub_api.Services
 
         Task<UserManagerResponse> ForgetPasswordAsync(string email);
 
-        Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);
+        Task<UserManagerResponse> ResetPasswordAsync(ResetCustomerPasswordViewModel model);
     }
 }

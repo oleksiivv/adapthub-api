@@ -162,3 +162,9 @@ F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\runtimes\win\lib\netco
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\adapthub-api.dll
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\adapthub-api.pdb
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\adapthub-api.dll.config
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\System.Net.Http.Formatting.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.WebApiCompatShim.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.DotNet.PlatformAbstractions.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll

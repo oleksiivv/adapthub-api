@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels.Organization;
+using adapthub_api.Models;
+using adapthub_api.Repositories;
+using adapthub_api.ViewModels.JobRequest;
+using adapthub_api.Services;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,38 +15,63 @@ namespace adapthub_api.Controllers
     [ApiController]
     public class OrganizationController : ControllerBase
     {
-        private readonly IOrganizationRepository organizationRepository;
+        private readonly IOrganizationRepository _organizationRepository;
+        private readonly ITokenService _tokenService;
 
-        public OrganizationController(IOrganizationRepository organizationRepository)
+        public OrganizationController(IOrganizationRepository organizationRepository, ITokenService tokenService)
         {
-            this.organizationRepository = organizationRepository;
+            _organizationRepository = organizationRepository;
+            _tokenService = tokenService;
         }
 
         [HttpGet]
-        public IEnumerable<string> Get([FromBody] FilterOrganizationViewModel data, int limit = 5, int offset = 0, string sort = "Id")
+        public IEnumerable<Organization> Get([FromBody] FilterOrganizationViewModel filter, int from = 0, int to = 10, string sort = "Id")
         {
-            return new string[] { "value1", "value2" };
+            var organizations = _organizationRepository.List(filter, sort, from, to).ToList();
+
+            for(int i=0; i<organizations.Count(); i++)
+            {
+                var organization = organizations[i];
+                organization.PasswordHash = null;
+                organizations[i] = organization;
+            }
+
+            return organizations;
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Organization Get(int id)
         {
-            return "value";
+            var organization = _organizationRepository.Find(id);
+            organization.PasswordHash = null;
+
+            return organization;
         }
 
         [HttpPost]
-        public void Post([FromBody] CreateOrganizationViewModel data)
+        public Organization Post([FromBody] CreateOrganizationViewModel data, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Moderator");
+
+            return _organizationRepository.Create(data);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UpdateOrganizationViewModel data)
+        public Organization Put(int id, [FromBody] UpdateOrganizationViewModel data, [FromHeader] string token)
         {
+            data.Id = id;
+
+            _tokenService.CheckAccess(token, "Organization", id.ToString());
+
+            return _organizationRepository.Update(data);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public Organization Delete(int id, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Organization", id.ToString());
+
+            return _organizationRepository.Delete(id);
         }
     }
 }

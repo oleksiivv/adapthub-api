@@ -1,6 +1,9 @@
-﻿using adapthub_api.Repositories.Interfaces;
+﻿using adapthub_api.Models;
+using adapthub_api.Repositories.Interfaces;
+using adapthub_api.Services;
 using adapthub_api.ViewModels.JobRequest;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,38 +13,64 @@ namespace adapthub_api.Controllers
     [ApiController]
     public class JobRequestController : ControllerBase
     {
-        private readonly IUserRepository jobRequestRepossitory;
+        private readonly IJobRequestRepository _jobRequestRepository;
+        private readonly ITokenService _tokenService;
 
-        public JobRequestController(IJobRequestRepository jobRequestRepository)
+        public JobRequestController(IJobRequestRepository jobRequestRepository, ITokenService tokenService)
         {
-            this.jobRequestRepossitory = jobRequestRepossitory;
+            _jobRequestRepository = jobRequestRepository;
+            _tokenService = tokenService;
         }
 
         [HttpGet]
-        public IEnumerable<string> Get([FromBody] FilterJobRequestViewModel filter, int limit = 5, int offset = 0, string sort = "Id")
+        public IEnumerable<JobRequest> Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
         {
-            return new string[] { "value1", "value2" };
+            return _jobRequestRepository.List(filter, sort, dir, from, to);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public JobRequest Get(int id)
         {
-            return "value";
+            return _jobRequestRepository.Find(id);
         }
 
         [HttpPost]
-        public void Post([FromBody] CreateJobRequestViewModel data)
+        public JobRequest Post([FromBody] CreateJobRequestViewModel data, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Customer");
+
+            return _jobRequestRepository.Create(data);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UpdateJobRequestViewModel data)
+        public JobRequest Put(int id, [FromBody] UpdateJobRequestViewModel data, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Customer");
+
+            data.Id = id;
+            data.Status = null;
+
+            return _jobRequestRepository.Update(data);
+        }
+
+        [HttpPut("{id}/status")]
+        public JobRequest UpdateStatus(int id, string status, [FromHeader] string token)
+        {
+            _tokenService.CheckAccess(token, "Moderator");
+
+            return _jobRequestRepository.Update(new UpdateJobRequestViewModel
+            {
+                Id = id,
+                Status = status,
+            });
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public JobRequest Delete(int id, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Customer");
+
+            return _jobRequestRepository.Delete(id);
         }
     }
 }

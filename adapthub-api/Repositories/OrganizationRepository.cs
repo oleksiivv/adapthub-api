@@ -47,9 +47,12 @@ namespace adapthub_api.Repositories
         {
             var organization = new Organization
             {
-                User = _data.Users.Find(data.UserId),
                 Name = data.Name,
                 SiteLink = data.SiteLink,
+                Description = data.Description,
+                EDRPOU = data.EDRPOU,
+                Email = data.Email,
+                PasswordHash = data.PasswordHash, //TODO: hash
             };
 
             _data.Organizations.Add(organization);
@@ -68,11 +71,6 @@ namespace adapthub_api.Repositories
             }
 
             //TODO: refactor this logic
-            if (data.UserId != null)
-            {
-                organization.User = _data.Users.Find(data.UserId);
-            }
-
             if (data.Name != null)
             {
                 organization.Name = data.Name;
@@ -82,6 +80,27 @@ namespace adapthub_api.Repositories
             {
                 organization.SiteLink = data.SiteLink;
             }
+
+            if (data.Description != null)
+            {
+                organization.Description = data.Description;
+            }
+
+            if (data.EDRPOU != null)
+            {
+                organization.EDRPOU = data.EDRPOU;
+            }
+
+            if (data.Email != null)
+            {
+                organization.Email = data.Email;
+            }
+
+            if (data.PasswordHash != null)
+            {
+                organization.PasswordHash = data.PasswordHash;
+            }
+
             _data.Update(organization);
 
             _data.SaveChanges();

@@ -1,13 +1,13 @@
-﻿namespace adapthub_api.Models
+﻿using adapthub_api.ViewModels;
+
+namespace adapthub_api.Models
 {
     public class JobRequest
     {
         public int Id { get; set; }
-        public User User { get; set; }
-
-        public string Status { get; set; }
-
-        //TODO: remove this field and provide more specific fields 
-        public string Data { get; set; }
+        public Customer Customer { get; set; }
+        public StatusType Status { get; set; }
+        public string Speciality { get; set; }
+        public int ExpectedSalary { get; set; }
     }
 }

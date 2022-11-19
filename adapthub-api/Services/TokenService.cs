@@ -11,7 +11,7 @@ namespace adapthub_api.Services
     {
         private const double EXPIRY_DURATION_MINUTES = 30;
 
-        public JwtSecurityToken BuildToken(string key, string issuer, User user)
+        public JwtSecurityToken BuildToken(string key, string issuer, Customer user)
         {
             var claims = new[] {
             new Claim(ClaimTypes.Name, user.UserName),

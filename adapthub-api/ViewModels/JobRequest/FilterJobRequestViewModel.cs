@@ -1,9 +1,19 @@
-﻿namespace adapthub_api.ViewModels.JobRequest
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace adapthub_api.ViewModels.JobRequest
 {
     public class FilterJobRequestViewModel
     {
-        public string? Status { get; set; }
+        [AllowNull]
+        public string? CustomerId { get; set; }
 
-        public string? UserId { get; set; }
+        [AllowNull]
+        public StatusType? Status { get; set; }
+
+        [AllowNull]
+        public string? Speciality { get; set; }
+
+        [AllowNull]
+        public int? ExpectedSalary { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
+using adapthub_api.ViewModels;
 using adapthub_api.ViewModels.JobRequest;
 using SendGrid.Helpers.Errors.Model;
 using System.Net;
@@ -17,14 +18,15 @@ namespace adapthub_api.Repositories
         {
             var jobRequest = _data.JobRequests.Find(id);
 
-            _data.Entry(jobRequest).Reference("User").Load();
+            _data.Entry(jobRequest).Reference("Customer").Load();
 
             return jobRequest;
         }
 
-        public IEnumerable<JobRequest> List(FilterJobRequestViewModel filter, string sort, int from, int to)
+        public IEnumerable<JobRequest> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to)
         {
-            var jobRequests = _data.JobRequests.Where(x => (x.Status == filter.Status || filter.Status == null) && (x.User.Id == filter.UserId || filter.UserId == null)).Skip(from).Take(to - from);
+            //TODO: refactor this fucking mess later
+            var jobRequests = _data.JobRequests.Where(x => (x.Status.ToString() == filter.Status.ToString() || filter.Status == null) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null)).Skip(from).Take(to - from);
 
             _data.Entry(jobRequests).Reference("User").Load();
 
@@ -33,8 +35,14 @@ namespace adapthub_api.Repositories
                 case "Status":
                     jobRequests = jobRequests.OrderBy(x => x.Status);
                     break;
-                case "UserId":
-                    jobRequests = jobRequests.OrderBy(x => x.User.Id);
+                case "CustomerId":
+                    jobRequests = jobRequests.OrderBy(x => x.Customer.Id);
+                    break;
+                case "Speciality":
+                    jobRequests = jobRequests.OrderBy(x => x.Speciality);
+                    break;
+                case "ExpectedSalary":
+                    jobRequests = jobRequests.OrderBy(x => x.ExpectedSalary);
                     break;
                 default:
                     jobRequests = jobRequests.OrderBy(x => x.Id);
@@ -48,9 +56,10 @@ namespace adapthub_api.Repositories
         {
             var jobRequest = new JobRequest
             {
-                User = _data.Users.Find(data.UserId),
-                Status = "DRAFT",
-                Data = data.Data,
+                Customer = _data.Customers.Find(data.CustomerId),
+                Status = StatusType.InReview,
+                Speciality = data.Speciality,
+                ExpectedSalary = data.ExpectedSalary,
             };
 
             _data.JobRequests.Add(jobRequest);
@@ -69,20 +78,27 @@ namespace adapthub_api.Repositories
             }
 
             //TODO: refactor this logic
-            if (data.UserId != null)
+            if (data.CustomerId != null)
             {
-                jobRequest.User = _data.Users.Find(data.UserId);
+                jobRequest.Customer = _data.Customers.Find(data.CustomerId);
             }
+            if (data.Speciality != null)
+            {
+                jobRequest.Speciality = data.Speciality;
+            }
+            if (data.ExpectedSalary != null)
+            {
+                jobRequest.ExpectedSalary = ((int)(data.ExpectedSalary != null ? data.ExpectedSalary : 6000));
+            }
+
+            StatusType status;
+            Enum.TryParse(data.Status, out status);
 
             if (data.Status != null)
             {
-                jobRequest.Status = data.Status;
+                jobRequest.Status = status;
             }
 
-            if (data.Data != null)
-            {
-                jobRequest.Data = data.Data;
-            }
             _data.Update(jobRequest);
 
             _data.SaveChanges();

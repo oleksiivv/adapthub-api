@@ -19,9 +19,9 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<JobRequest> Get([FromBody] FilterJobRequestViewModel filter, int from = 0, int to = 10, string sort = "Id")
+        public IEnumerable<JobRequest> Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
         {
-            return _jobRequestRepository.List(filter, sort, from, to);
+            return _jobRequestRepository.List(filter, sort, dir, from, to);
         }
 
         [HttpGet("{id}")]
@@ -37,9 +37,22 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public JobRequest Put([FromBody] UpdateJobRequestViewModel data)
+        public JobRequest Put(int id, [FromBody] UpdateJobRequestViewModel data)
         {
+            data.Id = id;
+            data.Status = null;
+
             return _jobRequestRepository.Update(data);
+        }
+
+        [HttpPut("{id}/status")]
+        public JobRequest UpdateStatus(int id, string status)
+        {
+            return _jobRequestRepository.Update(new UpdateJobRequestViewModel
+            {
+                Id = id,
+                Status = status,
+            });
         }
 
         [HttpDelete("{id}")]

@@ -1,19 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using adapthub_api.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace adapthub_api.ViewModels.JobRequest
 {
     public class UpdateJobRequestViewModel
     {
-        [Required]
-        public int Id { get; set; }
+        [AllowNull]
+        public int? Id { get; set; }
 
-        [Required]
-        public string UserId { get; set; }
+        [AllowNull]
+        public int? CustomerId { get; set; }
 
-        [Required]
-        public string Status { get; set; }
+        [AllowNull]
+        public string? Status { get; set; }
 
-        [Required]
-        public string Data { get; set; }
+        [AllowNull]
+        public string? Speciality { get; set; }
+
+        [AllowNull]
+        public int? ExpectedSalary { get; set; }
     }
 }

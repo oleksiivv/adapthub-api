@@ -18,11 +18,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IJobRequestRepository, JobRequestRepository>();
 builder.Services.AddScoped<IVacancyRepository, VacancyRepository>();
 
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddTransient<IMailService, MailService>();
 
@@ -31,12 +31,12 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub");
 });
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<Customer, IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>();
 
-builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<Customer>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>()
-                .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
+                .AddTokenProvider<DataProtectorTokenProvider<Customer>>(TokenOptions.DefaultProvider);
 
 builder.Services.Configure<IdentityOptions>(opts =>
 {

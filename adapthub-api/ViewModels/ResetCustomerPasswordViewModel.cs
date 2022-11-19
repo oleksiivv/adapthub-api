@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace adapthub_api.ViewModels
 {
-    public class ResetPasswordViewModel
+    public class ResetCustomerPasswordViewModel
     {
         [Required]
         public string Token { get; set; }

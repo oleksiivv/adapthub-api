@@ -1,20 +1,29 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace adapthub_api.ViewModels.Vacancy
 {
     public class UpdateVacancyViewModel
     {
-        [Required]
-        public int Id { get; set; }
+        [AllowNull]
+        public int? Id { get; set; }
 
-        public string Title { get; set; }
+        [AllowNull]
+        public string? Speciality { get; set; }
 
-        public string Status { get; set; }
+        [AllowNull]
+        public int? OrganizationId { get; set; }
 
-        public int OrganizationId { get; set; }
+        [AllowNull]
+        public string? Status;
 
-        public int JobRequestId { get; set; }
+        [AllowNull]
+        public int? ChosenJobRequest { get; set; }
 
-        public string Data { get; set; }
+        [AllowNull]
+        public int? Salary { get; set; }
+
+        [AllowNull]
+        public int? MinExperience { get; set; }
     }
 }

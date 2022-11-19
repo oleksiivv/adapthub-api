@@ -9,13 +9,13 @@ using System.Text;
 namespace adapthub_api.Services
 {
     //TODO: refactor this class
-    public class UserService : IUserService
+    public class AuthService : IAuthService
     {
-        private UserManager<User> _userManger;
+        private UserManager<Customer> _userManger;
         private IConfiguration _configuration;
         private IMailService _mailService;
         private ITokenService _tokenService;
-        public UserService(UserManager<User> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService)
+        public AuthService(UserManager<Customer> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService)
         {
             _userManger = userManager;
             _configuration = configuration;
@@ -23,7 +23,7 @@ namespace adapthub_api.Services
             _tokenService = tokenService;
         }
 
-        public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
+        public async Task<UserManagerResponse> RegisterUserAsync(RegisterCustomerViewModel model)
         {
             if (model == null)
                 throw new NullReferenceException("Reigster Model is null");
@@ -34,12 +34,24 @@ namespace adapthub_api.Services
                     Message = "Confirm password doesn't match the password",
                     IsSuccess = false,
                 };
+            GenderType gender;
+            Enum.TryParse(model.Gender, out gender);
 
-            var identityUser = new User
+            var identityUser = new Customer
             {
                 Email = model.Email,
-                UserName = model.Email,
-                Data = model.Data
+                UserName = model.UserName,
+                PassportNumber = model.PassportNumber,
+                IDCode = model.IDCode,
+                Gender = gender,
+                CurrentAddress = model.CurrentAddress,
+                PhoneNumber = model.PhoneNumber,
+                Experience = new CustomerExperience{
+                    Experience = model.Experience.Experience,
+                    Education = model.Experience.Education,
+                    PastJob = model.Experience.PastJob,
+                    Profession = model.Experience.Profession,
+                }
             };
 
             var result = await _userManger.CreateAsync(identityUser, model.Password);
@@ -171,7 +183,7 @@ namespace adapthub_api.Services
             };
         }
 
-        public async Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model)
+        public async Task<UserManagerResponse> ResetPasswordAsync(ResetCustomerPasswordViewModel model)
         {
             var user = await _userManger.FindByEmailAsync(model.Email);
             if (user == null)

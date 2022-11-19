@@ -4,10 +4,10 @@ using System.Xml.Linq;
 
 namespace adapthub_api.Repositories.Interfaces
 {
-    public interface IUserRepository
+    public interface ICustomerRepository
     {
-        public User Find(string id);
+        public Customer Find(string id);
 
-        public User Update(UpdateUserViewModel data);
+        public Customer Update(UpdateCustomerViewModel data);
     }
 }

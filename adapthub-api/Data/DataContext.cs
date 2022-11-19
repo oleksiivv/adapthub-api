@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adapthub_api
 {
-    public class DataContext : IdentityDbContext<User>
+    public class DataContext : IdentityDbContext<Customer>
     {
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
@@ -20,14 +20,14 @@ namespace adapthub_api
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Customer>().ToTable("Users");
         }
 
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Vacancy> Vacancies { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
         public DbSet<JobRequest> JobRequests { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<Customer> Customers { get; set; }
         public DbSet<IdentityUserClaim<string>> UserClaims { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories;
 using adapthub_api.Repositories.Interfaces;
+using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +22,9 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Vacancy> Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id")
+        public IEnumerable<Vacancy> Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
         {
-            return _vacancyRepository.List(filter, sort, from, to);
+            return _vacancyRepository.List(filter, sort, dir, from, to);
         }
 
         [HttpGet("{id}")]
@@ -39,9 +40,36 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public Vacancy Put([FromBody] UpdateVacancyViewModel data)
+        public Vacancy Put(int id, [FromBody] UpdateVacancyViewModel data)
         {
+            data.Id = id;
+            data.Status = null;
+
             return _vacancyRepository.Update(data);
+        }
+
+        [HttpPut("{id}/confirm-job-request/{jobRequestId}")]
+        public Vacancy ConfirmJobRequest(int id, int jobRequestId)
+        {
+            //TODO: send email
+
+            return _vacancyRepository.ChooseJobRequest(id, jobRequestId);
+        }
+
+        [HttpPut("{id}/job-request/{jobRequestId}")]
+        public void AskForVacancy(int id, int jobRequestId)
+        {
+           //TODO: send email
+        }
+
+        [HttpPut("{id}/status")]
+        public Vacancy UpdateStatus(int id, string status)
+        {
+            return _vacancyRepository.Update(new UpdateVacancyViewModel
+            {
+                Id = id,
+                Status = status,
+            });
         }
 
         [HttpDelete("{id}")]

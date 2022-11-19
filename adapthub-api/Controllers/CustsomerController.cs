@@ -10,25 +10,25 @@ namespace adapthub_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class CustomerController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly ICustomerRepository _customerRepository;
 
-        public UserController(IUserRepository userRepository)
+        public CustomerController(ICustomerRepository customerRepository)
         {
-            _userRepository = userRepository;
+            _customerRepository = customerRepository;
         }
 
         [HttpGet("{id}")]
-        public User Get(string id)
+        public Customer Get(string id)
         {
-            return _userRepository.Find(id);
+            return _customerRepository.Find(id);
         }
 
         [HttpPut("{id}")]
-        public User Put([FromBody] UpdateUserViewModel data)
+        public Customer Put([FromBody] UpdateCustomerViewModel data)
         {
-            return _userRepository.Update(data);
+            return _customerRepository.Update(data);
         }
     }
 }

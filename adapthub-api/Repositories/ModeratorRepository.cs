@@ -28,12 +28,24 @@ namespace adapthub_api.Repositories
             {
                 Email = data.Email,
                 PasswordHash = data.Password, //TODO: hash
+                FullName = data.FullName,
+                PhoneNumber = data.PhoneNumber,
             };
 
             _data.Moderators.Add(moderator);
             _data.SaveChanges();
 
             return moderator;
+        }
+
+        public Moderator FindByEmail(string email)
+        {
+            return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First();
+        }
+
+        public bool CheckPassword(string email, string password)
+        {
+            return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First().PasswordHash == password; //TODO: hash
         }
     }
 }

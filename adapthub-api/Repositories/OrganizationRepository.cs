@@ -24,23 +24,23 @@ namespace adapthub_api.Repositories
 
         public IEnumerable<Organization> List(FilterOrganizationViewModel filter, string sort, int from, int to)
         {
-            var organizations = _data.Organizations.Where(x => (x.Name == filter.Name || filter.Name == null)).Skip(from).Take(to - from);
+            var organizations = _data.Organizations.Where(x => (x.Name == filter.Name || filter.Name == null));
 
             _data.Entry(organizations).Reference("User").Load();
 
-            switch (sort)
+            switch (sort.ToLower())
             {
-                case "Name":
-                    organizations = organizations.OrderBy(x => x.Name);
+                case "name":
+                    organizations = sort.ToLower().Equals("asc") ? organizations.OrderBy(x => x.Name) : organizations.OrderByDescending(x => x.Name);
                     break;
-                case "SiteLink":
-                    organizations = organizations.OrderBy(x => x.SiteLink);
+                case "sitelink":
+                    organizations = sort.ToLower().Equals("asc") ? organizations.OrderBy(x => x.SiteLink) : organizations.OrderByDescending(x => x.SiteLink);
                     break;
                 default:
-                    organizations = organizations.OrderBy(x => x.Id);
+                    organizations = sort.ToLower().Equals("asc") ? organizations.OrderBy(x => x.Id) : organizations.OrderByDescending(x => x.Id);
                     break;
             }
-            return organizations;
+            return organizations.Skip(from).Take(to - from);
         }
 
         public Organization Create(CreateOrganizationViewModel data)
@@ -122,6 +122,16 @@ namespace adapthub_api.Repositories
             _data.SaveChanges();
 
             return organization;
+        }
+
+        public Organization FindByEmail(string email)
+        {
+            return _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).First();
+        }
+
+        public bool CheckPassword(string email, string password)
+        {
+            return _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).First().PasswordHash == password; //TODO: hash
         }
     }
 }

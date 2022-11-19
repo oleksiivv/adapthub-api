@@ -1,4 +1,5 @@
 ﻿using adapthub_api.Models;
+using adapthub_api.Repositories.Interfaces;
 using adapthub_api.Responses;
 using adapthub_api.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -15,12 +16,16 @@ namespace adapthub_api.Services
         private IConfiguration _configuration;
         private IMailService _mailService;
         private ITokenService _tokenService;
-        public AuthService(UserManager<Customer> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService)
+        private readonly IOrganizationRepository _organizationRepository;
+        private readonly IModeratorRepository _moderatorRepository;
+        public AuthService(UserManager<Customer> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService, IOrganizationRepository organizationRepository, IModeratorRepository moderatorRepository)
         {
             _userManger = userManager;
             _configuration = configuration;
             _mailService = mailService;
             _tokenService = tokenService;
+            _organizationRepository = organizationRepository;
+            _moderatorRepository = moderatorRepository;
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterCustomerViewModel model)
@@ -65,8 +70,8 @@ namespace adapthub_api.Services
 
                 string url = $"{_configuration["AppUrl"]}api/auth/confirmemail?userid={identityUser.Id}&token={validEmailToken}";
 
-                await _mailService.SendEmailAsync(identityUser.Email, "Confirm your email", $"<h1>Welcome to Auth Demo</h1>" +
-                    $"<p>Please confirm your email by <a href='{url}'>Clicking here</a></p>");
+                await _mailService.SendEmailAsync(identityUser.Email, "Підтверди свій акаунт", $"<h1>AdaptHub</h1>" +
+                    $"<p>Підтвердити емейл: <a href='{url}'>Натисни тут</a></p>");
 
 
                 return new UserManagerResponse
@@ -87,27 +92,57 @@ namespace adapthub_api.Services
 
         public async Task<UserManagerResponse> LoginUserAsync(LoginViewModel model)
         {
-            var user = await _userManger.FindByEmailAsync(model.Email);
+            Customer user = null;
+            Moderator moderator = null;
+            Organization organization = null;
+
+            user = await _userManger.FindByEmailAsync(model.Email);
 
             if (user == null)
             {
-                return new UserManagerResponse
+                moderator = _moderatorRepository.FindByEmail(model.Email);
+
+                if(moderator == null)
                 {
-                    Message = "There is no user with that Email address",
-                    IsSuccess = false,
-                };
+                    organization = _organizationRepository.FindByEmail(model.Email);
+
+                    if (organization == null)
+                    {
+                        return new UserManagerResponse
+                        {
+                            Message = "There is no user with that Email address",
+                            IsSuccess = false,
+                        };
+                    }
+                }
             }
 
             var result = await _userManger.CheckPasswordAsync(user, model.Password);
 
             if (!result)
-                return new UserManagerResponse
-                {
-                    Message = "Invalid password",
-                    IsSuccess = false,
-                };
+            {
+                result = _moderatorRepository.CheckPassword(model.Email, model.Password);
 
-            var token = _tokenService.BuildToken(_configuration["AuthSettings:Key"], _configuration["AuthSettings:Issuer"], user);
+                if (!result)
+                {
+                    result = _organizationRepository.CheckPassword(model.Email, model.Password);
+
+                    if (!result)
+                    {
+                        return new UserManagerResponse
+                        {
+                            Message = "Invalid password",
+                            IsSuccess = false,
+                        };
+                    }
+                }           
+            }
+
+            var currentUserId = user == null
+                ? moderator == null ? organization.Id.ToString() : moderator.Id.ToString()
+                : user.Id;
+
+            var token = _tokenService.BuildToken(_configuration["AuthSettings:Key"], _configuration["AuthSettings:Issuer"], currentUserId);
 
             var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
 
@@ -173,8 +208,8 @@ namespace adapthub_api.Services
             var validToken = WebEncoders.Base64UrlEncode(encodedToken);
 
             //TODO: investigate better solution to give user access token
-            await _mailService.SendEmailAsync(email, "Reset Password", "<h1>Follow the instructions to reset your password</h1>" +
-                $"<p>To reset your password copy token: {validToken}");
+            await _mailService.SendEmailAsync(email, "Змінити пароль", "<h1>Виконай інструкцію шоб змінити пароль</h1>" +
+                $"<p>Щоб змінити пароль скопіюй токен: {validToken}");
 
             return new UserManagerResponse
             {

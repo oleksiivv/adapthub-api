@@ -15,5 +15,9 @@ namespace adapthub_api.Repositories.Interfaces
         public Organization Update(UpdateOrganizationViewModel data);
 
         public Organization Delete(int id);
+
+        public Organization FindByEmail(string email);
+
+        public bool CheckPassword(string email, string password);
     }
 }

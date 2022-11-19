@@ -26,27 +26,37 @@ namespace adapthub_api.Repositories
         public IEnumerable<JobRequest> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to)
         {
             //TODO: refactor this fucking mess later
-            var jobRequests = _data.JobRequests.Where(x => (x.Status.ToString() == filter.Status.ToString() || filter.Status == null) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null)).Skip(from).Take(to - from);
+            StatusType status = StatusType.Empty;
+            Enum.TryParse(filter.Status, out status);
+            var jobRequests = _data.JobRequests.Where(x => (x._status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
 
-            _data.Entry(jobRequests).Reference("User").Load();
-
-            switch (sort)
+            switch (sort.ToLower())
             {
-                case "Status":
-                    jobRequests = jobRequests.OrderBy(x => x.Status);
+                case "status":
+                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x._status) : jobRequests.OrderByDescending(x => x._status);
                     break;
-                case "CustomerId":
-                    jobRequests = jobRequests.OrderBy(x => x.Customer.Id);
+                case "customerid":
+                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Customer.Id) : jobRequests.OrderByDescending(x => x.Customer.Id);
                     break;
-                case "Speciality":
-                    jobRequests = jobRequests.OrderBy(x => x.Speciality);
+                case "speciality":
+                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Speciality) : jobRequests.OrderByDescending(x => x.Speciality);
                     break;
-                case "ExpectedSalary":
-                    jobRequests = jobRequests.OrderBy(x => x.ExpectedSalary);
+                case "expectedsalary":
+                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.ExpectedSalary) : jobRequests.OrderByDescending(x => x.ExpectedSalary);
                     break;
                 default:
-                    jobRequests = jobRequests.OrderBy(x => x.Id);
+                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Id) : jobRequests.OrderByDescending(x => x.Id);
                     break;
+            }
+
+            jobRequests = jobRequests.Skip(from).Take(to - from);
+
+            foreach (var jobRequest in jobRequests)
+            {
+                if (!_data.Entry(jobRequest).Reference("Customer").IsLoaded)
+                {
+                    _data.Entry(jobRequest).Reference("Customer").Load();
+                }
             }
 
             return jobRequests;
@@ -57,7 +67,7 @@ namespace adapthub_api.Repositories
             var jobRequest = new JobRequest
             {
                 Customer = _data.Customers.Find(data.CustomerId),
-                Status = StatusType.InReview,
+                _status = StatusType.InReview,
                 Speciality = data.Speciality,
                 ExpectedSalary = data.ExpectedSalary,
             };
@@ -96,12 +106,14 @@ namespace adapthub_api.Repositories
 
             if (data.Status != null)
             {
-                jobRequest.Status = status;
+                jobRequest._status = status;
             }
 
             _data.Update(jobRequest);
 
             _data.SaveChanges();
+
+            _data.Entry(jobRequest).Reference("Customer").Load();
 
             return jobRequest;
         }

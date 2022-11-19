@@ -2,8 +2,9 @@
 
 namespace adapthub_api.Models
 {
-    public class CustomerExperience : IdentityUser
+    public class CustomerExperience
     {
+        public int Id { get; set; }
         public string? PastJob { get; set; }
 
         public string? Education { get; set; }

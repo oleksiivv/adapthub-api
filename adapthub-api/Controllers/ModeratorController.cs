@@ -1,5 +1,6 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
+using adapthub_api.Services;
 using adapthub_api.ViewModels.Moderator;
 using adapthub_api.ViewModels.User;
 using adapthub_api.ViewModels.Vacancy;
@@ -14,19 +15,23 @@ namespace adapthub_api.Controllers
     public class ModeratorController : ControllerBase
     {
         private readonly IModeratorRepository _moderatorRepository;
+        private readonly ITokenService _tokenService;
 
-        public ModeratorController(IModeratorRepository moderatorRepository)
+        public ModeratorController(IModeratorRepository moderatorRepository, ITokenService tokenService)
         {
             _moderatorRepository = moderatorRepository;
+            _tokenService = tokenService;
         }
 
         [HttpGet("{id}")]
-        public Moderator Get(int id)
+        public Moderator Get(int id, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Moderator", id.ToString());
+
             return _moderatorRepository.Find(id);
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         public Moderator Post([FromBody] CreateModeratorViewModel data)
         {
             return _moderatorRepository.Create(data);

@@ -10,5 +10,9 @@ namespace adapthub_api.Repositories.Interfaces
         public Moderator Find(int id);
 
         public Moderator Create(CreateModeratorViewModel data);
+
+        public Moderator FindByEmail(string email);
+
+        public bool CheckPassword(string email, string password);
     }
 }

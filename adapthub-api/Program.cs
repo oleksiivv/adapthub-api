@@ -25,10 +25,12 @@ builder.Services.AddScoped<IVacancyRepository, VacancyRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddTransient<IModeratorRepository, ModeratorRepository>();
+builder.Services.AddTransient<IVacancyProcessService, VacancyProcessService>();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub");
+    options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub;MultipleActiveResultSets=true");
 });
 
 builder.Services.AddIdentity<Customer, IdentityRole>()

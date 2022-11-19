@@ -17,7 +17,14 @@ namespace adapthub_api.Repositories
         public Customer Find(string id)
         {
             var customer = _data.Customers.Find(id);
-            _data.Entry(customer).Reference("CustomerExperience").Load();
+            _data.Entry(customer).Reference("Experience").Load();
+
+            return customer;
+        }
+
+        public Customer FindWithoutRelations(string id)
+        {
+            var customer = _data.Customers.Find(id);
 
             return customer;
         }

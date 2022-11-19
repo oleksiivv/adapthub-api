@@ -4,6 +4,7 @@ using adapthub_api.ViewModels;
 using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
 using SendGrid.Helpers.Errors.Model;
+using System.Net;
 
 namespace adapthub_api.Repositories
 {
@@ -27,30 +28,44 @@ namespace adapthub_api.Repositories
 
         public IEnumerable<Vacancy> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to)
         {
-            var vacancies = _data.Vacancies.Where(x => (x.Status.ToString() == filter.Status.ToString() || filter.Status == null) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null)).Skip(from).Take(to - from);
+            StatusType status = StatusType.Empty;
+            Enum.TryParse(filter.Status, out status);
+            var vacancies = _data.Vacancies.Where(x => (x._status == status || status == StatusType.Empty) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null));
 
-            _data.Entry(vacancies).Reference("Organization").Load();
-
-            switch (sort)
+            switch (sort.ToLower())
             {
-                case "Status":
-                    vacancies = vacancies.OrderBy(x => x.Status);
+                case "status":
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x._status) : vacancies.OrderByDescending(x => x._status);
                     break;
-                case "OrganizationId":
-                    vacancies = vacancies.OrderBy(x => x.Organization.Id);
+                case "organizationid":
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Organization.Id) : vacancies.OrderByDescending(x => x.Organization.Id);
                     break;
-                case "Speciality":
-                    vacancies = vacancies.OrderBy(x => x.Speciality);
+                case "speciality":
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Speciality) : vacancies.OrderByDescending(x => x.Speciality);
                     break;
-                case "Salary":
-                    vacancies = vacancies.OrderBy(x => x.Salary);
+                case "salary":
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Salary) : vacancies.OrderByDescending(x => x.Salary);
                     break;
-                case "Experience":
-                    vacancies = vacancies.OrderBy(x => x.MinExperience);
+                case "experience":
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.MinExperience) : vacancies.OrderByDescending(x => x.MinExperience);
                     break;
                 default:
-                    vacancies = vacancies.OrderBy(x => x.Id);
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Id) : vacancies.OrderByDescending(x => x.Id);
                     break;
+            }
+
+            vacancies = vacancies.Skip(from).Take(to - from);
+
+            foreach (var vacancy in vacancies)
+            {
+                if (!_data.Entry(vacancy).Reference("ChosenJobRequest").IsLoaded)
+                {
+                    _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
+                }
+                if (!_data.Entry(vacancy).Reference("Organization").IsLoaded)
+                {
+                    _data.Entry(vacancy).Reference("Organization").Load();
+                }
             }
 
             return vacancies;
@@ -61,7 +76,7 @@ namespace adapthub_api.Repositories
             var vacancy = new Vacancy
             {
                 Organization = _data.Organizations.Find(data.OrganizationId),
-                Status = StatusType.InReview,
+                _status = StatusType.InReview,
                 Speciality = data.Speciality,
                 Salary = data.Salary,
                 MinExperience = data.MinExperience,
@@ -89,7 +104,7 @@ namespace adapthub_api.Repositories
             //TODO: refactor this logic
             if (data.Status != null)
             {
-                vacancy.Status = status;
+                vacancy._status = status;
             }
 
             if (data.Speciality != null)
@@ -111,6 +126,9 @@ namespace adapthub_api.Repositories
 
             _data.SaveChanges();
 
+            _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
+            _data.Entry(vacancy).Reference("Organization").Load();
+
             return vacancy;
         }
 
@@ -126,12 +144,15 @@ namespace adapthub_api.Repositories
             if (jobRequestId != null)
             {
                 vacancy.ChosenJobRequest = _data.JobRequests.Find(jobRequestId);
-                vacancy.Status = StatusType.Past;
+                vacancy._status = StatusType.Past;
             }
 
             _data.Update(vacancy);
 
             _data.SaveChanges();
+
+            _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
+            _data.Entry(vacancy).Reference("Organization").Load();
 
             return vacancy;
         }

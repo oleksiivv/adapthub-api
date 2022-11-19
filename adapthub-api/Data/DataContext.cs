@@ -14,7 +14,7 @@ namespace adapthub_api
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub;MultipleActiveResultSets=true");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

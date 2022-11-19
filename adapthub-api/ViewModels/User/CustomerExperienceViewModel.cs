@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace adapthub_api.ViewModels.User
 {
-    public class CustomerExperienceViewModel : IdentityUser
+    public class CustomerExperienceViewModel
     {
         [AllowNull]
         public string? PastJob { get; set; }

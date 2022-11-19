@@ -1,7 +1,9 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
+using adapthub_api.Services;
 using adapthub_api.ViewModels.JobRequest;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,10 +14,12 @@ namespace adapthub_api.Controllers
     public class JobRequestController : ControllerBase
     {
         private readonly IJobRequestRepository _jobRequestRepository;
+        private readonly ITokenService _tokenService;
 
-        public JobRequestController(IJobRequestRepository jobRequestRepository)
+        public JobRequestController(IJobRequestRepository jobRequestRepository, ITokenService tokenService)
         {
             _jobRequestRepository = jobRequestRepository;
+            _tokenService = tokenService;
         }
 
         [HttpGet]
@@ -31,14 +35,18 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPost]
-        public JobRequest Post([FromBody] CreateJobRequestViewModel data)
+        public JobRequest Post([FromBody] CreateJobRequestViewModel data, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Customer");
+
             return _jobRequestRepository.Create(data);
         }
 
         [HttpPut("{id}")]
-        public JobRequest Put(int id, [FromBody] UpdateJobRequestViewModel data)
+        public JobRequest Put(int id, [FromBody] UpdateJobRequestViewModel data, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Customer");
+
             data.Id = id;
             data.Status = null;
 
@@ -46,8 +54,10 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public JobRequest UpdateStatus(int id, string status)
+        public JobRequest UpdateStatus(int id, string status, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Moderator");
+
             return _jobRequestRepository.Update(new UpdateJobRequestViewModel
             {
                 Id = id,
@@ -56,8 +66,10 @@ namespace adapthub_api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public JobRequest Delete(int id)
+        public JobRequest Delete(int id, [FromHeader] string token)
         {
+            _tokenService.CheckAccess(token, "Customer");
+
             return _jobRequestRepository.Delete(id);
         }
     }

@@ -8,7 +8,7 @@ namespace adapthub_api.ViewModels.JobRequest
         public string? CustomerId { get; set; }
 
         [AllowNull]
-        public StatusType? Status { get; set; }
+        public string? Status { get; set; }
 
         [AllowNull]
         public string? Speciality { get; set; }

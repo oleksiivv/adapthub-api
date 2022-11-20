@@ -14,7 +14,7 @@ namespace adapthub_api.Repositories
         {
             _data = data;
         }
-        public Customer Find(string id)
+        public Customer Find(int id)
         {
             var customer = _data.Customers.Find(id);
             _data.Entry(customer).Reference("Experience").Load();
@@ -22,7 +22,7 @@ namespace adapthub_api.Repositories
             return customer;
         }
 
-        public Customer FindWithoutRelations(string id)
+        public Customer FindWithoutRelations(int id)
         {
             var customer = _data.Customers.Find(id);
 
@@ -69,7 +69,7 @@ namespace adapthub_api.Repositories
             return user;
         }
 
-        public Customer UpdateUserExperience(string customerId, CustomerExperienceViewModel expereience)
+        public Customer UpdateUserExperience(int customerId, CustomerExperienceViewModel expereience)
         {
             var customer = _data.Customers.Find(customerId);
 

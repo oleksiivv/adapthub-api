@@ -26,7 +26,7 @@ namespace adapthub_api.Controllers
         [HttpGet("{id}")]
         public Moderator Get(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Moderator", id.ToString());
+            _tokenService.CheckAccess(token, "Moderator", id);
 
             return _moderatorRepository.Find(id);
         }

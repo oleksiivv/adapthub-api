@@ -5,7 +5,7 @@ namespace adapthub_api.ViewModels.JobRequest
     public class FilterJobRequestViewModel
     {
         [AllowNull]
-        public string? CustomerId { get; set; }
+        public int? CustomerId { get; set; }
 
         [AllowNull]
         public string? Status { get; set; }

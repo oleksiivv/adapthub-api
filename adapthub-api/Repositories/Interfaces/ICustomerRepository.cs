@@ -6,9 +6,9 @@ namespace adapthub_api.Repositories.Interfaces
 {
     public interface ICustomerRepository
     {
-        public Customer Find(string id);
+        public Customer Find(int id);
 
-        public Customer FindWithoutRelations(string id);
+        public Customer FindWithoutRelations(int id);
 
         public Customer Update(UpdateCustomerViewModel data);
     }

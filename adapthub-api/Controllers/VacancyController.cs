@@ -61,7 +61,7 @@ namespace adapthub_api.Controllers
         [HttpPut("{id}/confirm-job-request/{jobRequestId}")]
         public Vacancy ConfirmJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization", customerId.ToString());
+            _tokenService.CheckAccess(token, "Organization", customerId);
 
             _vacancyProcessService.ChooseJobRequestForVacancy(id, jobRequestId);
 

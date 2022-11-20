@@ -97,7 +97,7 @@ namespace adapthub_api.Services
             Organization organization = null;
 
             string role = "Customer";
-            string id;
+            int id;
 
             user = await _userManger.FindByEmailAsync(model.Email);
             
@@ -121,12 +121,12 @@ namespace adapthub_api.Services
                     }
                     else
                     {
-                        id = organization.Id.ToString();
+                        id = organization.Id;
                     }
                 }
                 else
                 {
-                    id = moderator.Id.ToString();
+                    id = moderator.Id;
                 }
             }
             else
@@ -138,11 +138,11 @@ namespace adapthub_api.Services
 
             if (!result)
             {
-                result = _moderatorRepository.CheckPassword(model.Email, model.Password);
+                if (moderator != null) result = _moderatorRepository.CheckPassword(model.Email, model.Password);
 
                 if (!result)
                 {
-                    result = _organizationRepository.CheckPassword(model.Email, model.Password);
+                    if (organization != null) result = _organizationRepository.CheckPassword(model.Email, model.Password);
 
                     if (!result)
                     {
@@ -156,7 +156,7 @@ namespace adapthub_api.Services
             }
 
             var currentUserId = user == null
-                ? moderator == null ? organization.Id.ToString() : moderator.Id.ToString()
+                ? moderator == null ? organization.Id : moderator.Id
                 : user.Id;
 
             var token = _tokenService.BuildToken(_configuration["AuthSettings:Key"], _configuration["AuthSettings:Issuer"], currentUserId);

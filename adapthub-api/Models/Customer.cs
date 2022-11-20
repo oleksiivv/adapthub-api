@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace adapthub_api.Models
 {
-    public class Customer : IdentityUser
+    public class Customer : IdentityUser<int>
     {
+        public override int Id { get; set; }
         public string PassportNumber { get; set; }
 
         public string IDCode { get; set; }

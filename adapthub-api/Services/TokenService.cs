@@ -25,10 +25,10 @@ namespace adapthub_api.Services
             _moderatorRepository = moderatorRepository;
         }
 
-        public JwtSecurityToken BuildToken(string key, string issuer, string userId)
+        public JwtSecurityToken BuildToken(string key, string issuer, int userId)
         {
             var claims = new[] {
-                new Claim(ClaimTypes.Name, userId),
+                new Claim(ClaimTypes.Name, userId.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
             };
 
@@ -64,16 +64,16 @@ namespace adapthub_api.Services
             return true;
         }
 
-        public void CheckAccess(string token, string type, string? expectedId = null)
+        public void CheckAccess(string token, string type, int? expectedId = null)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwt = tokenHandler.ReadJwtToken(token);
 
-            var id = jwt.Claims.ElementAt(0).Value;
+            int id = Convert.ToInt32(jwt.Claims.ElementAt(0).Value);
 
             if(expectedId != null)
             {
-                if (! id.Equals(expectedId))
+                if (id != expectedId)
                 {
                     throw new HttpResponseException(HttpStatusCode.Unauthorized);
                 }

@@ -61,7 +61,7 @@ namespace adapthub_api.Controllers
         {
             data.Id = id;
 
-            _tokenService.CheckAccess(token, "Organization", id.ToString());
+            _tokenService.CheckAccess(token, "Organization", id);
 
             return _organizationRepository.Update(data);
         }
@@ -69,7 +69,7 @@ namespace adapthub_api.Controllers
         [HttpDelete("{id}")]
         public Organization Delete(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization", id.ToString());
+            _tokenService.CheckAccess(token, "Organization", id);
 
             return _organizationRepository.Delete(id);
         }

@@ -11,8 +11,8 @@ namespace adapthub_api.ViewModels.User
         [AllowNull]
         public string? PassportNumber { get; set; }
 
-        [Required]
-        public string UserName { get; set; }
+        [AllowNull]
+        public string? UserName { get; set; }
 
         [AllowNull]
         public string? IDCode { get; set; }

@@ -97,6 +97,7 @@ namespace adapthub_api.Services
             Organization organization = null;
 
             string role = "Customer";
+            string id;
 
             user = await _userManger.FindByEmailAsync(model.Email);
             
@@ -118,7 +119,19 @@ namespace adapthub_api.Services
                             IsSuccess = false,
                         };
                     }
+                    else
+                    {
+                        id = organization.Id.ToString();
+                    }
                 }
+                else
+                {
+                    id = moderator.Id.ToString();
+                }
+            }
+            else
+            {
+                id = user.Id;
             }
 
             var result = await _userManger.CheckPasswordAsync(user, model.Password);
@@ -156,6 +169,7 @@ namespace adapthub_api.Services
                 IsSuccess = true,
                 ExpireDate = token.ValidTo,
                 Role = role,
+                Id = id,
             };
         }
 

@@ -96,15 +96,19 @@ namespace adapthub_api.Services
             Moderator moderator = null;
             Organization organization = null;
 
-            user = await _userManger.FindByEmailAsync(model.Email);
+            string role = "User";
 
+            user = await _userManger.FindByEmailAsync(model.Email);
+            
             if (user == null)
             {
                 moderator = _moderatorRepository.FindByEmail(model.Email);
+                role = "Employee";
 
                 if(moderator == null)
                 {
                     organization = _organizationRepository.FindByEmail(model.Email);
+                    role = "Organization";
 
                     if (organization == null)
                     {
@@ -133,6 +137,7 @@ namespace adapthub_api.Services
                         {
                             Message = "Invalid password",
                             IsSuccess = false,
+                            Role = role,
                         };
                     }
                 }           

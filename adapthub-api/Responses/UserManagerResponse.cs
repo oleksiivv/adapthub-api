@@ -12,5 +12,7 @@ namespace adapthub_api.Responses
         public DateTime? ExpireDate { get; set; }
 
         public string Role { get; set; }
+
+        public string Id { get; set; }
     }
 }

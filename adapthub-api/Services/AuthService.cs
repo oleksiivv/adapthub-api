@@ -96,7 +96,7 @@ namespace adapthub_api.Services
             Moderator moderator = null;
             Organization organization = null;
 
-            string role = "User";
+            string role = "Customer";
 
             user = await _userManger.FindByEmailAsync(model.Email);
             
@@ -137,7 +137,6 @@ namespace adapthub_api.Services
                         {
                             Message = "Invalid password",
                             IsSuccess = false,
-                            Role = role,
                         };
                     }
                 }           
@@ -155,7 +154,8 @@ namespace adapthub_api.Services
             {
                 Message = tokenAsString,
                 IsSuccess = true,
-                ExpireDate = token.ValidTo
+                ExpireDate = token.ValidTo,
+                Role = role,
             };
         }
 

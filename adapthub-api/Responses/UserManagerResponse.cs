@@ -11,6 +11,6 @@ namespace adapthub_api.Responses
         public IEnumerable<string> Errors { get; set; }
         public DateTime? ExpireDate { get; set; }
 
-        public string? Role { get; set; }
+        public string Role { get; set; }
     }
 }

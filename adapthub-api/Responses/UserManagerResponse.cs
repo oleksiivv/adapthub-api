@@ -13,6 +13,6 @@ namespace adapthub_api.Responses
 
         public string Role { get; set; }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
     }
 }

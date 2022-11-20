@@ -5,7 +5,7 @@ namespace adapthub_api.ViewModels.JobRequest
     public class CreateJobRequestViewModel
     {
         [Required]
-        public string CustomerId { get; set; }
+        public int CustomerId { get; set; }
 
         [Required]
         public string Speciality { get; set; }

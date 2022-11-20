@@ -126,7 +126,7 @@ namespace adapthub_api.Repositories
 
         public Organization FindByEmail(string email)
         {
-            return _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).First();
+            return _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).Count() > 0 ? _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).First() : null;
         }
 
         public bool CheckPassword(string email, string password)

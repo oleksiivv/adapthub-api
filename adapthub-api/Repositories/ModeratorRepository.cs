@@ -40,7 +40,7 @@ namespace adapthub_api.Repositories
 
         public Moderator FindByEmail(string email)
         {
-            return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First();
+            return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).Count() > 0 ? _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First() : null;
         }
 
         public bool CheckPassword(string email, string password)

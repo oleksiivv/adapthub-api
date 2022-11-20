@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace adapthub_api
 {
-    public class DataContext : IdentityDbContext<Customer>
+    public class DataContext : IdentityDbContext<Customer, IdentityRole<int>, int>
     {
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)

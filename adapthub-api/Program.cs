@@ -33,7 +33,7 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub;MultipleActiveResultSets=true");
 });
 
-builder.Services.AddIdentity<Customer, IdentityRole>()
+builder.Services.AddIdentity<Customer, IdentityRole<int>>()
                 .AddEntityFrameworkStores<DataContext>();
 
 builder.Services.AddIdentityCore<Customer>(options => options.SignIn.RequireConfirmedAccount = true)

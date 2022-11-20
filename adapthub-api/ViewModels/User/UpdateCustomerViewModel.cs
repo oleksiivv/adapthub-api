@@ -6,7 +6,7 @@ namespace adapthub_api.ViewModels.User
     public class UpdateCustomerViewModel
     {
         [AllowNull]
-        public string? Id { get; set; }
+        public int? Id { get; set; }
 
         [AllowNull]
         public string? PassportNumber { get; set; }

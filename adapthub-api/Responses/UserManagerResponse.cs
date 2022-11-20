@@ -10,5 +10,7 @@ namespace adapthub_api.Responses
         public bool IsSuccess { get; set; }
         public IEnumerable<string> Errors { get; set; }
         public DateTime? ExpireDate { get; set; }
+
+        public string Role { get; set; }
     }
 }

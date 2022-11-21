@@ -10,7 +10,6 @@ namespace adapthub_api.Models
         public StatusType _status { get; set; }
         public string Speciality { get; set; }
         public int ExpectedSalary { get; set; }
-
         public string Status
         {
             get

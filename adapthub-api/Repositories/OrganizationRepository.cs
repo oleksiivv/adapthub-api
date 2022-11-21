@@ -52,7 +52,7 @@ namespace adapthub_api.Repositories
                 Description = data.Description,
                 EDRPOU = data.EDRPOU,
                 Email = data.Email,
-                PasswordHash = data.PasswordHash, //TODO: hash
+                PasswordHash = data.Password, //TODO: hash
             };
 
             _data.Organizations.Add(organization);
@@ -96,9 +96,9 @@ namespace adapthub_api.Repositories
                 organization.Email = data.Email;
             }
 
-            if (data.PasswordHash != null)
+            if (data.Password != null)
             {
-                organization.PasswordHash = data.PasswordHash;
+                organization.PasswordHash = data.Password;
             }
 
             _data.Update(organization);

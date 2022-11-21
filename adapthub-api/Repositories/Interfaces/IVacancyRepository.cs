@@ -8,15 +8,15 @@ namespace adapthub_api.Repositories.Interfaces
 {
     public interface IVacancyRepository
     {
-        public Vacancy Find(int id);
+        public VacancyViewModel Find(int id);
 
-        public IEnumerable<Vacancy> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to);
+        public IEnumerable<VacancyViewModel> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to);
 
-        public Vacancy Create(CreateVacancyViewModel data);
-        public Vacancy Update(UpdateVacancyViewModel data);
+        public VacancyViewModel Create(CreateVacancyViewModel data);
+        public VacancyViewModel Update(UpdateVacancyViewModel data);
 
-        public Vacancy Delete(int id);
+        public VacancyViewModel Delete(int id);
 
-        public Vacancy ChooseJobRequest(int id, int jobRequestId);
+        public VacancyViewModel ChooseJobRequest(int id, int jobRequestId);
     }
 }

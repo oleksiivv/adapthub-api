@@ -11,7 +11,7 @@ namespace adapthub_api.ViewModels.Organization
         public int? OrganizationId { get; set; }
 
         [AllowNull]
-        public string? Status;
+        public string? Status { get; set; }
 
         [AllowNull]
         public int? ChosenJobRequest { get; set; }

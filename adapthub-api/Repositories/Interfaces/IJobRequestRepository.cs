@@ -7,10 +7,10 @@ namespace adapthub_api.Repositories.Interfaces
 {
     public interface IJobRequestRepository
     {
-        public JobRequest Find(int id);
-        public IEnumerable<JobRequest> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to);
-        public JobRequest Create(CreateJobRequestViewModel data);
-        public JobRequest Update(UpdateJobRequestViewModel data);
-        public JobRequest Delete(int id);
+        public JobRequestViewModel Find(int id);
+        public IEnumerable<JobRequestViewModel> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to);
+        public JobRequestViewModel Create(CreateJobRequestViewModel data);
+        public JobRequestViewModel Update(UpdateJobRequestViewModel data);
+        public JobRequestViewModel Delete(int id);
     }
 }

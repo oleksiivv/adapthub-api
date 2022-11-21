@@ -14,20 +14,20 @@ namespace adapthub_api.Repositories
         {
             _data = data;
         }
-        public JobRequest Find(int id)
+        public JobRequestViewModel Find(int id)
         {
             var jobRequest = _data.JobRequests.Find(id);
 
             _data.Entry(jobRequest).Reference("Customer").Load();
 
-            return jobRequest;
+            return PrepareResponse(jobRequest);
         }
 
-        public IEnumerable<JobRequest> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to)
+        public IEnumerable<JobRequestViewModel> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to)
         {
-            //TODO: refactor this fucking mess later
-            StatusType status = StatusType.Empty;
-            Enum.TryParse(filter.Status, out status);
+            if (!Enum.TryParse(filter.Status, out StatusType status))
+                status = StatusType.Empty;
+
             var jobRequests = _data.JobRequests.Where(x => (x._status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
 
             switch (sort.ToLower())
@@ -59,10 +59,17 @@ namespace adapthub_api.Repositories
                 }
             }
 
-            return jobRequests;
+            var jobRequestViewModels = new List<JobRequestViewModel>();
+
+            foreach(var jobRequest in jobRequests)
+            {
+                jobRequestViewModels.Add(PrepareResponse(jobRequest));
+            }
+
+            return jobRequestViewModels;
         }
 
-        public JobRequest Create(CreateJobRequestViewModel data)
+        public JobRequestViewModel Create(CreateJobRequestViewModel data)
         {
             var jobRequest = new JobRequest
             {
@@ -75,10 +82,10 @@ namespace adapthub_api.Repositories
             _data.JobRequests.Add(jobRequest);
             _data.SaveChanges();
 
-            return jobRequest;
+            return PrepareResponse(jobRequest);
         }
 
-        public JobRequest Update(UpdateJobRequestViewModel data)
+        public JobRequestViewModel Update(UpdateJobRequestViewModel data)
         {
             var jobRequest = _data.JobRequests.Find(data.Id);
 
@@ -115,10 +122,10 @@ namespace adapthub_api.Repositories
 
             _data.Entry(jobRequest).Reference("Customer").Load();
 
-            return jobRequest;
+            return PrepareResponse(jobRequest);
         }
 
-        public JobRequest Delete(int id)
+        public JobRequestViewModel Delete(int id)
         {
             var jobRequest = _data.JobRequests.Find(id);
 
@@ -131,7 +138,19 @@ namespace adapthub_api.Repositories
 
             _data.SaveChanges();
 
-            return jobRequest;
+            return PrepareResponse(jobRequest);
+        }
+
+        private JobRequestViewModel PrepareResponse(JobRequest jobRequest)
+        {
+            return new JobRequestViewModel
+            {
+                Id = jobRequest.Id,
+                Customer = jobRequest.Customer,
+                Speciality = jobRequest.Speciality,
+                ExpectedSalary = jobRequest.ExpectedSalary,
+                Status = jobRequest.Status,
+            };
         }
     }
 }

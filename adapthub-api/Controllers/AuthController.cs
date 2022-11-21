@@ -30,6 +30,7 @@ namespace adapthub_api.Controllers
 
         // /api/auth/register
         [HttpPost("Register")]
+        [ProducesResponseType(typeof(UserManagerResponse), 200)]
         public async Task<IActionResult> RegisterAsync([FromBody]RegisterCustomerViewModel model)
         {
             if(ModelState.IsValid)
@@ -47,6 +48,7 @@ namespace adapthub_api.Controllers
 
         // /api/auth/login
         [HttpPost("Login")]
+        [ProducesResponseType(typeof(UserManagerResponse), 200)]
         public async Task<IActionResult> LoginAsync([FromBody]LoginViewModel model)
         {
             if(ModelState.IsValid)
@@ -67,6 +69,7 @@ namespace adapthub_api.Controllers
 
         // /api/auth/confirmemail?userid&token
         [HttpGet("ConfirmEmail")]
+        [ProducesResponseType(typeof(UserManagerResponse), 200)]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
@@ -84,6 +87,7 @@ namespace adapthub_api.Controllers
 
         // api/auth/forgetpassword
         [HttpPost("ForgetPassword")]
+        [ProducesResponseType(typeof(UserManagerResponse), 200)]
         public async Task<IActionResult> ForgetPassword(string email)
         {
             if (string.IsNullOrEmpty(email))
@@ -99,6 +103,7 @@ namespace adapthub_api.Controllers
 
         // api/auth/resetpassword
         [HttpPost("ResetPassword")]
+        [ProducesResponseType(typeof(UserManagerResponse), 200)]
         public async Task<IActionResult> ResetPassword([FromForm]ResetCustomerPasswordViewModel model)
         {
             if(ModelState.IsValid)

@@ -24,6 +24,6 @@ namespace adapthub_api.ViewModels.Organization
         public string? Email { get; set; }
 
         [AllowNull]
-        public string? PasswordHash { get; set; }
+        public string? Password { get; set; }
     }
 }

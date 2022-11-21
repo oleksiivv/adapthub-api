@@ -1,6 +1,7 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels;
+using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
 using SendGrid.Helpers.Errors.Model;
@@ -16,20 +17,21 @@ namespace adapthub_api.Repositories
             _data = data; 
         }
 
-        public Vacancy Find(int id)
+        public VacancyViewModel Find(int id)
         {
             var vacancy = _data.Vacancies.Find(id);
 
             _data.Entry(vacancy).Reference("Organization").Load();
             _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
 
-            return vacancy;
+            return PrepareResponse(vacancy);
         }
 
-        public IEnumerable<Vacancy> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to)
+        public IEnumerable<VacancyViewModel> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to)
         {
-            StatusType status = StatusType.Empty;
-            Enum.TryParse(filter.Status, out status);
+            if(!Enum.TryParse(filter.Status, out StatusType status)) 
+                status = StatusType.Empty;
+
             var vacancies = _data.Vacancies.Where(x => (x._status == status || status == StatusType.Empty) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null));
 
             switch (sort.ToLower())
@@ -68,10 +70,17 @@ namespace adapthub_api.Repositories
                 }
             }
 
-            return vacancies;
+            var vacancyViewModels = new List<VacancyViewModel>();
+
+            foreach (Vacancy vacancy in vacancies)
+            {
+                vacancyViewModels.Add(PrepareResponse(vacancy));
+            }
+
+            return vacancyViewModels;
         }
 
-        public Vacancy Create(CreateVacancyViewModel data)
+        public VacancyViewModel Create(CreateVacancyViewModel data)
         {
             var vacancy = new Vacancy
             {
@@ -85,10 +94,10 @@ namespace adapthub_api.Repositories
             _data.Vacancies.Add(vacancy);
             _data.SaveChanges();
 
-            return vacancy;
+            return PrepareResponse(vacancy);
         }
 
-        public Vacancy Update(UpdateVacancyViewModel data)
+        public VacancyViewModel Update(UpdateVacancyViewModel data)
         {
             var vacancy = _data.Vacancies.Find(data.Id);
 
@@ -129,10 +138,10 @@ namespace adapthub_api.Repositories
             _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
             _data.Entry(vacancy).Reference("Organization").Load();
 
-            return vacancy;
+            return PrepareResponse(vacancy);
         }
 
-        public Vacancy ChooseJobRequest(int id, int jobRequestId)
+        public VacancyViewModel ChooseJobRequest(int id, int jobRequestId)
         {
             var vacancy = _data.Vacancies.Find(id);
 
@@ -154,10 +163,10 @@ namespace adapthub_api.Repositories
             _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
             _data.Entry(vacancy).Reference("Organization").Load();
 
-            return vacancy;
+            return PrepareResponse(vacancy);
         }
 
-        public Vacancy Delete(int id)
+        public VacancyViewModel Delete(int id)
         {
             var vacancy = _data.Vacancies.Find(id);
 
@@ -170,7 +179,21 @@ namespace adapthub_api.Repositories
 
             _data.SaveChanges();
 
-            return vacancy;
+            return PrepareResponse(vacancy);
+        }
+
+        private VacancyViewModel PrepareResponse(Vacancy vacancy)
+        {
+            return new VacancyViewModel
+            {
+                Id = vacancy.Id,
+                Speciality = vacancy.Speciality,
+                Organization = vacancy.Organization,
+                ChosenJobRequest = vacancy.ChosenJobRequest,
+                Salary = vacancy.Salary,
+                MinExperience = vacancy.MinExperience,
+                Status = vacancy.Status,
+            };
         }
     }
 }

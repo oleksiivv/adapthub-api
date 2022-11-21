@@ -23,19 +23,19 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<JobRequest> Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
+        public IEnumerable<JobRequestViewModel> Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
         {
             return _jobRequestRepository.List(filter, sort, dir, from, to);
         }
 
         [HttpGet("{id}")]
-        public JobRequest Get(int id)
+        public JobRequestViewModel Get(int id)
         {
             return _jobRequestRepository.Find(id);
         }
 
         [HttpPost]
-        public JobRequest Post([FromBody] CreateJobRequestViewModel data, [FromHeader] string token)
+        public JobRequestViewModel Post([FromBody] CreateJobRequestViewModel data, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Customer");
 
@@ -43,7 +43,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public JobRequest Put(int id, [FromBody] UpdateJobRequestViewModel data, [FromHeader] string token)
+        public JobRequestViewModel Put(int id, [FromBody] UpdateJobRequestViewModel data, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Customer");
 
@@ -54,7 +54,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public JobRequest UpdateStatus(int id, string status, [FromHeader] string token)
+        public JobRequestViewModel UpdateStatus(int id, string status, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Moderator");
 
@@ -66,7 +66,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public JobRequest Delete(int id, [FromHeader] string token)
+        public JobRequestViewModel Delete(int id, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Customer");
 

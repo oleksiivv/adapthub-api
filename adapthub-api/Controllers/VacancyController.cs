@@ -28,19 +28,19 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Vacancy> Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
+        public IEnumerable<VacancyViewModel> Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
         {
             return _vacancyRepository.List(filter, sort, dir, from, to);
         }
 
         [HttpGet("{id}")]
-        public Vacancy Get(int id)
+        public VacancyViewModel Get(int id)
         {
             return _vacancyRepository.Find(id);
         }
 
         [HttpPost]
-        public Vacancy Post([FromBody] CreateVacancyViewModel data, [FromHeader] string token)
+        public VacancyViewModel Post([FromBody] CreateVacancyViewModel data, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Organization");
 
@@ -48,7 +48,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public Vacancy Put(int id, [FromBody] UpdateVacancyViewModel data, [FromHeader] string token)
+        public VacancyViewModel Put(int id, [FromBody] UpdateVacancyViewModel data, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Organization");
 
@@ -59,7 +59,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}/confirm-job-request/{jobRequestId}")]
-        public Vacancy ConfirmJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
+        public VacancyViewModel ConfirmJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Organization", customerId);
 
@@ -69,15 +69,24 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}/job-request/{jobRequestId}")]
-        public void AskForVacancy(int id, int jobRequestId, [FromHeader] string token)
+        public async Task<IActionResult> AskForVacancy(int id, int jobRequestId, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Customer");
 
-            _vacancyProcessService.AskForVacancy(id, jobRequestId);
+            var result = _vacancyProcessService.AskForVacancy(id, jobRequestId);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                return Ok();
+            }
+            else
+            {
+                return UnprocessableEntity();
+            }
         }
 
         [HttpPut("{id}/status")]
-        public Vacancy UpdateStatus(int id, string status, [FromHeader] string token)
+        public VacancyViewModel UpdateStatus(int id, string status, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Organization");
 
@@ -89,7 +98,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public Vacancy Delete(int id, [FromHeader] string token)
+        public VacancyViewModel Delete(int id, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Organization");
 

@@ -28,12 +28,12 @@ namespace adapthub_api.Repositories
             if (!Enum.TryParse(filter.Status, out StatusType status))
                 status = StatusType.Empty;
 
-            var jobRequests = _data.JobRequests.Where(x => (x._status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
+            var jobRequests = _data.JobRequests.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
 
             switch (sort.ToLower())
             {
                 case "status":
-                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x._status) : jobRequests.OrderByDescending(x => x._status);
+                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Status) : jobRequests.OrderByDescending(x => x.Status);
                     break;
                 case "customerid":
                     jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Customer.Id) : jobRequests.OrderByDescending(x => x.Customer.Id);
@@ -74,7 +74,7 @@ namespace adapthub_api.Repositories
             var jobRequest = new JobRequest
             {
                 Customer = _data.Customers.Find(data.CustomerId),
-                _status = StatusType.InReview,
+                Status = StatusType.InReview,
                 Speciality = data.Speciality,
                 ExpectedSalary = data.ExpectedSalary,
             };
@@ -113,7 +113,7 @@ namespace adapthub_api.Repositories
 
             if (data.Status != null)
             {
-                jobRequest._status = status;
+                jobRequest.Status = status;
             }
 
             _data.Update(jobRequest);
@@ -149,7 +149,7 @@ namespace adapthub_api.Repositories
                 Customer = jobRequest.Customer,
                 Speciality = jobRequest.Speciality,
                 ExpectedSalary = jobRequest.ExpectedSalary,
-                Status = jobRequest.Status,
+                Status = jobRequest.Status.ToString(),
             };
         }
     }

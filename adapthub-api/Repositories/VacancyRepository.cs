@@ -32,12 +32,12 @@ namespace adapthub_api.Repositories
             if(!Enum.TryParse(filter.Status, out StatusType status)) 
                 status = StatusType.Empty;
 
-            var vacancies = _data.Vacancies.Where(x => (x._status == status || status == StatusType.Empty) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null));
+            var vacancies = _data.Vacancies.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null));
 
             switch (sort.ToLower())
             {
                 case "status":
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x._status) : vacancies.OrderByDescending(x => x._status);
+                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Status) : vacancies.OrderByDescending(x => x.Status);
                     break;
                 case "organizationid":
                     vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Organization.Id) : vacancies.OrderByDescending(x => x.Organization.Id);
@@ -85,7 +85,7 @@ namespace adapthub_api.Repositories
             var vacancy = new Vacancy
             {
                 Organization = _data.Organizations.Find(data.OrganizationId),
-                _status = StatusType.InReview,
+                Status = StatusType.InReview,
                 Speciality = data.Speciality,
                 Salary = data.Salary,
                 MinExperience = data.MinExperience,
@@ -113,7 +113,7 @@ namespace adapthub_api.Repositories
             //TODO: refactor this logic
             if (data.Status != null)
             {
-                vacancy._status = status;
+                vacancy.Status = status;
             }
 
             if (data.Speciality != null)
@@ -153,7 +153,7 @@ namespace adapthub_api.Repositories
             if (jobRequestId != null)
             {
                 vacancy.ChosenJobRequest = _data.JobRequests.Find(jobRequestId);
-                vacancy._status = StatusType.Past;
+                vacancy.Status = StatusType.Past;
             }
 
             _data.Update(vacancy);
@@ -192,7 +192,7 @@ namespace adapthub_api.Repositories
                 ChosenJobRequest = vacancy.ChosenJobRequest,
                 Salary = vacancy.Salary,
                 MinExperience = vacancy.MinExperience,
-                Status = vacancy.Status,
+                Status = vacancy.Status.ToString(),
             };
         }
     }

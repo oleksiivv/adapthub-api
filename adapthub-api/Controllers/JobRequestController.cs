@@ -60,7 +60,7 @@ namespace adapthub_api.Controllers
         {
             _tokenService.CheckAccess(token, "Organization");
 
-            var result = _vacancyProcessService.AskForJobRequest(id, vacancyId);
+            var result = _vacancyProcessService.AskForJobRequest(vacancyId, id);
 
             if (result.IsCompletedSuccessfully)
             {

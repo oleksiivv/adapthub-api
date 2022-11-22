@@ -1,9 +1,11 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels;
+using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.User;
 using SendGrid.Helpers.Errors.Model;
 using System.Net;
+using System.Reflection.Emit;
 
 namespace adapthub_api.Repositories
 {
@@ -14,12 +16,12 @@ namespace adapthub_api.Repositories
         {
             _data = data;
         }
-        public Customer Find(int id)
+        public CustomerViewModel Find(int id)
         {
             var customer = _data.Customers.Find(id);
             _data.Entry(customer).Reference("Experience").Load();
 
-            return customer;
+            return PrepareResponse(customer);
         }
 
         public Customer FindWithoutRelations(int id)
@@ -29,7 +31,7 @@ namespace adapthub_api.Repositories
             return customer;
         }
 
-        public Customer Update(UpdateCustomerViewModel data)
+        public CustomerViewModel Update(UpdateCustomerViewModel data)
         {
             var user = _data.Customers.Find(data.Id);
 
@@ -66,7 +68,7 @@ namespace adapthub_api.Repositories
 
             _data.SaveChanges();
 
-            return user;
+            return PrepareResponse(user);
         }
 
         public Customer UpdateUserExperience(int customerId, CustomerExperienceViewModel expereience)
@@ -95,6 +97,25 @@ namespace adapthub_api.Repositories
             _data.SaveChanges();
 
             return customer;
+        }
+
+        private CustomerViewModel PrepareResponse(Customer customer)
+        {
+            return new CustomerViewModel
+            {
+                Id = customer.Id,
+                Gender = customer.Gender.ToString(),
+                UserName = customer.UserName,
+                NormalizedUserName = customer.NormalizedUserName,
+                Email = customer.Email,
+                NormalizedEmail = customer.NormalizedEmail,
+                EmailConfirmed = customer.EmailConfirmed,
+                PasswordHash = customer.PasswordHash,
+                PassportNumber = customer.PassportNumber,
+                IDCode = customer.IDCode,
+                CurrentAddress = customer.CurrentAddress,
+                PhoneNumber = customer.PhoneNumber,
+            };
         }
     }
 }

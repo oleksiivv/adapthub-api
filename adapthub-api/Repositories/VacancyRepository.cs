@@ -27,7 +27,7 @@ namespace adapthub_api.Repositories
             return PrepareResponse(vacancy);
         }
 
-        public IEnumerable<VacancyViewModel> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to)
+        public ListVacancies List(FilterVacancyViewModel filter, string sort, string direction, int from, int to)
         {
             if(!Enum.TryParse(filter.Status, out StatusType status)) 
                 status = StatusType.Empty;
@@ -77,7 +77,11 @@ namespace adapthub_api.Repositories
                 vacancyViewModels.Add(PrepareResponse(vacancy));
             }
 
-            return vacancyViewModels;
+            return new ListVacancies
+            {
+                Data = vacancyViewModels,
+                TotalCount = _data.Vacancies.Count(),
+            };
         }
 
         public VacancyViewModel Create(CreateVacancyViewModel data)

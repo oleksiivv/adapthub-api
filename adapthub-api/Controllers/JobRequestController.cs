@@ -15,15 +15,17 @@ namespace adapthub_api.Controllers
     {
         private readonly IJobRequestRepository _jobRequestRepository;
         private readonly ITokenService _tokenService;
+        private readonly IVacancyProcessService _vacancyProcessService;
 
-        public JobRequestController(IJobRequestRepository jobRequestRepository, ITokenService tokenService)
+        public JobRequestController(IJobRequestRepository jobRequestRepository, ITokenService tokenService, IVacancyProcessService vacancyProcessService)
         {
             _jobRequestRepository = jobRequestRepository;
             _tokenService = tokenService;
+            _vacancyProcessService = vacancyProcessService;
         }
 
         [HttpGet]
-        public IEnumerable<JobRequestViewModel> Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
+        public ListJobRequests Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
         {
             return _jobRequestRepository.List(filter, sort, dir, from, to);
         }
@@ -51,6 +53,23 @@ namespace adapthub_api.Controllers
             data.Status = null;
 
             return _jobRequestRepository.Update(data);
+        }
+
+        [HttpPut("{id}/vacancy/{vacancyId}")]
+        public async Task<IActionResult> AskForJobRequest(int id, int vacancyId, [FromHeader] string token)
+        {
+            _tokenService.CheckAccess(token, "Organization");
+
+            var result = _vacancyProcessService.AskForJobRequest(id, vacancyId);
+
+            if (result.IsCompletedSuccessfully)
+            {
+                return Ok();
+            }
+            else
+            {
+                return UnprocessableEntity();
+            }
         }
 
         [HttpPut("{id}/status")]

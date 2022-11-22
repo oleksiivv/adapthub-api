@@ -23,7 +23,7 @@ namespace adapthub_api.Repositories
             return PrepareResponse(jobRequest);
         }
 
-        public IEnumerable<JobRequestViewModel> List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to)
+        public ListJobRequests List(FilterJobRequestViewModel filter, string sort, string direction, int from, int to)
         {
             if (!Enum.TryParse(filter.Status, out StatusType status))
                 status = StatusType.Empty;
@@ -61,12 +61,15 @@ namespace adapthub_api.Repositories
 
             var jobRequestViewModels = new List<JobRequestViewModel>();
 
-            foreach(var jobRequest in jobRequests)
+            foreach (var jobRequest in jobRequests)
             {
                 jobRequestViewModels.Add(PrepareResponse(jobRequest));
             }
 
-            return jobRequestViewModels;
+            return new ListJobRequests {
+                Data = jobRequestViewModels,
+                TotalCount = _data.JobRequests.Count(),
+            };
         }
 
         public JobRequestViewModel Create(CreateJobRequestViewModel data)

@@ -1,4 +1,8 @@
-﻿using adapthub_api.Repositories.Interfaces;
+﻿using adapthub_api.Models;
+using adapthub_api.Repositories.Interfaces;
+using adapthub_api.ViewModels;
+using adapthub_api.ViewModels.JobRequest;
+using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Identity;
 using System.Configuration;
 using System.Security.Policy;
@@ -20,6 +24,15 @@ namespace adapthub_api.Services
             _jobRequestRepository = jobRequestRepository;
         }
 
+        public async Task AskForJobRequest(int vacancyId, int jobRequestId)
+        {
+            var vacancy = _vacancyRepository.Find(vacancyId);
+            var jobRequest = _jobRequestRepository.Find(jobRequestId);
+
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Пропозиція з роботи", $"Ви отримали пропозицію на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization}" +
+                    $"<a href='#'>Переглянути вакансію</a>");
+        }
+
         public async Task AskForVacancy(int vacancyId, int jobRequestId)
         {
             var vacancy = _vacancyRepository.Find(vacancyId);
@@ -29,10 +42,27 @@ namespace adapthub_api.Services
                     $"<a href='#'>Переглянути заявку</a>");
         }
 
-        public async Task ChooseJobRequestForVacancy(int vacancyId, int jobRequestId)
+        public async Task CancelJobRequestForVacancy(int vacancyId, int jobRequestId)
         {
             var vacancy = _vacancyRepository.Find(vacancyId);
+
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
+
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Вашу заявку відхилено", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization} було відхилено. Продовжуйте пошук.</h1>");
+        }
+        public async Task ChooseJobRequestForVacancy(int vacancyId, int jobRequestId)
+        {
+            var vacancy = _vacancyRepository.Update(new UpdateVacancyViewModel
+            {
+                Id = vacancyId,
+                Status = StatusType.Past.ToString(),
+            });
+
+            var jobRequest = _jobRequestRepository.Update(new UpdateJobRequestViewModel
+            {
+                Id = jobRequestId,
+                Status = StatusType.Past.ToString(),
+            });
 
             await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Нова вакансія для вас", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization} було схваленою.</h1>" +
                     $"<a href='#'>Переглянути вакансію</a>");

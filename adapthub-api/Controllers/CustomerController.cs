@@ -24,7 +24,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet("{id}")]
-        public Customer Get(int id, [FromHeader] string token)
+        public CustomerViewModel Get(int id, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Customer", id);
 
@@ -32,7 +32,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public Customer Put(int id, [FromBody] UpdateCustomerViewModel data, [FromHeader] string token)
+        public CustomerViewModel Put(int id, [FromBody] UpdateCustomerViewModel data, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Customer", id);
 

@@ -1,4 +1,5 @@
 ﻿using adapthub_api.Models;
+using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
 using SendGrid.Helpers.Errors.Model;
@@ -10,7 +11,7 @@ namespace adapthub_api.Repositories.Interfaces
     {
         public VacancyViewModel Find(int id);
 
-        public IEnumerable<VacancyViewModel> List(FilterVacancyViewModel filter, string sort, string direction, int from, int to);
+        public ListVacancies List(FilterVacancyViewModel filter, string sort, string direction, int from, int to);
 
         public VacancyViewModel Create(CreateVacancyViewModel data);
         public VacancyViewModel Update(UpdateVacancyViewModel data);

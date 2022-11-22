@@ -85,7 +85,7 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                    throw new HttpResponseException(HttpStatusCode.Forbidden);
                 }
             }
             else if (type.Equals("Moderator"))
@@ -94,7 +94,7 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                    throw new HttpResponseException(HttpStatusCode.Forbidden);
                 }
             }
             else if (type.Equals("Organization"))
@@ -103,12 +103,12 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                    throw new HttpResponseException(HttpStatusCode.Forbidden);
                 }
             }
             else
             {
-                throw new UnauthorizedAccessException();
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
             }
         }
     }

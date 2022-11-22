@@ -28,7 +28,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<VacancyViewModel> Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
+        public ListVacancies Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
         {
             return _vacancyRepository.List(filter, sort, dir, from, to);
         }
@@ -58,7 +58,7 @@ namespace adapthub_api.Controllers
             return _vacancyRepository.Update(data);
         }
 
-        [HttpPut("{id}/confirm-job-request/{jobRequestId}")]
+        [HttpPut("{id}/confirm-job-request/{jobRequestId}/confirm")]
         public VacancyViewModel ConfirmJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
         {
             _tokenService.CheckAccess(token, "Organization", customerId);
@@ -66,6 +66,16 @@ namespace adapthub_api.Controllers
             _vacancyProcessService.ChooseJobRequestForVacancy(id, jobRequestId);
 
             return _vacancyRepository.ChooseJobRequest(id, jobRequestId);
+        }
+
+        [HttpPut("{id}/confirm-job-request/{jobRequestId}/cancel")]
+        public VacancyViewModel CancelJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
+        {
+            _tokenService.CheckAccess(token, "Organization", customerId);
+
+            _vacancyProcessService.CancelJobRequestForVacancy(id, jobRequestId);
+
+            return _vacancyRepository.Find(id);
         }
 
         [HttpPut("{id}/job-request/{jobRequestId}")]

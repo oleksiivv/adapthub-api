@@ -40,7 +40,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddSingleton(new EmailConfiguration
 {
     From = "testttt621@gmail.com",
-    Password = "gcpqfioeurckanxw",
+    Password = "<paste pswd here>",
     SmtpServer = "smtp.gmail.com",
     Port = 465,
     UserName = "testttt621@gmail.com",

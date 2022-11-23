@@ -3,10 +3,12 @@ using adapthub_api.Models;
 using adapthub_api.Repositories;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.Services;
+using adapthub_api.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,9 +30,20 @@ builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<IModeratorRepository, ModeratorRepository>();
 builder.Services.AddTransient<IVacancyProcessService, VacancyProcessService>();
 
+//builder.Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=adapthub;MultipleActiveResultSets=true");
+});
+
+builder.Services.AddSingleton(new EmailConfiguration
+{
+    From = "testttt621@gmail.com",
+    Password = "<paste pswd here>",
+    SmtpServer = "smtp.gmail.com",
+    Port = 465,
+    UserName = "testttt621@gmail.com",
 });
 
 builder.Services.AddIdentity<Customer, IdentityRole<int>>()

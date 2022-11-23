@@ -76,6 +76,14 @@
               "target": "Package",
               "version": "[6.0.10, )"
             },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[3.4.2, )"
+            },
+            "NETCore.MailKit": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
             "SendGrid": {
               "target": "Package",
               "version": "[9.28.1, )"

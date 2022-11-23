@@ -1,4 +1,5 @@
 ﻿using adapthub_api.Models;
+using adapthub_api.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

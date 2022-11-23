@@ -168,3 +168,7 @@ F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.AspNetCore.M
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.DotNet.PlatformAbstractions.dll
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\MailKit.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\MimeKit.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\NETCore.MailKit.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\BouncyCastle.Crypto.dll

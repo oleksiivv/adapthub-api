@@ -36,5 +36,11 @@ namespace adapthub_api.Controllers
         {
             return _moderatorRepository.Create(data);
         }
+
+        [HttpPost("/seed")]
+        public void SeedDB()
+        {
+            _moderatorRepository.SeedDB();
+        }
     }
 }

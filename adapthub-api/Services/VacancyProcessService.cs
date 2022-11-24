@@ -59,6 +59,7 @@ namespace adapthub_api.Services
             {
                 Id = vacancyId,
                 Status = StatusType.Past.ToString(),
+                ChosenJobRequest = jobRequestId,
             });
 
             var jobRequest = _jobRequestRepository.Update(new UpdateJobRequestViewModel

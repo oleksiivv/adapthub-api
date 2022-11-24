@@ -1,4 +1,5 @@
 ﻿using adapthub_api.Models;
+using adapthub_api.Providers;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels.Organization;
 using SendGrid.Helpers.Errors.Model;
@@ -48,7 +49,7 @@ namespace adapthub_api.Repositories
                 Description = data.Description,
                 EDRPOU = data.EDRPOU,
                 Email = data.Email,
-                PasswordHash = data.Password, //TODO: hash
+                PasswordHash = SHA1Provider.Hash(data.Password),
             };
 
             _data.Organizations.Add(organization);
@@ -94,7 +95,7 @@ namespace adapthub_api.Repositories
 
             if (data.Password != null)
             {
-                organization.PasswordHash = data.Password;
+                organization.PasswordHash = SHA1Provider.Hash(data.Password);
             }
 
             _data.Update(organization);
@@ -127,7 +128,7 @@ namespace adapthub_api.Repositories
 
         public bool CheckPassword(string email, string password)
         {
-            return _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).First().PasswordHash == password; //TODO: hash
+            return _data.Organizations.Where(x => x.Email.ToLower().Equals(email)).First().PasswordHash.ToLower().Equals(SHA1Provider.Hash(password).ToLower());
         }
     }
 }

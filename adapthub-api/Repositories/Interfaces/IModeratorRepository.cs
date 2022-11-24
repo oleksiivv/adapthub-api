@@ -13,7 +13,7 @@ namespace adapthub_api.Repositories.Interfaces
 
         public Moderator Update(UpdateModeratorViewModel data);
 
-        public Moderator FindByEmail(string email);
+        public Moderator? FindByEmail(string email);
 
         public bool CheckPassword(string email, string password);
 

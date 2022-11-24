@@ -42,23 +42,6 @@ namespace adapthub_api.Services
             GenderType gender;
             Enum.TryParse(model.Gender, out gender);
 
-            HelpOption helpOption;
-            switch (model.HelpOption.ToLower())
-            {
-                case "соціальна допомога":
-                    helpOption = HelpOption.SocialHelp;
-                    break;
-                case "юридично-правова допомога":
-                    helpOption = HelpOption.JuridicalHelp;
-                    break;
-                case "медична допомога":
-                    helpOption = HelpOption.MedicalHelp;
-                    break;
-                default:
-                    helpOption = HelpOption.SearchForJob;
-                    break;
-            }
-
             var identityUser = new Customer
             {
                 Email = model.Email,
@@ -69,13 +52,35 @@ namespace adapthub_api.Services
                 CurrentAddress = model.CurrentAddress,
                 PhoneNumber = model.PhoneNumber,
                 Experience = new CustomerExperience{
-                    Experience = model.Experience.Experience,
-                    Education = model.Experience.Education,
-                    PastJob = model.Experience.PastJob,
-                    Profession = model.Experience.Profession,
+                    Experience = model.Experience?.Experience,
+                    Education = model.Experience?.Education,
+                    PastJob = model.Experience?.PastJob,
+                    Profession = model.Experience?.Profession,
                 },
-                HelpOption = helpOption,
             };
+
+            HelpOption helpOption;
+
+            if (model.HelpOption != null)
+            {
+                switch (model.HelpOption.ToLower())
+                {
+                    case "соціальна допомога":
+                        helpOption = HelpOption.SocialHelp;
+                        break;
+                    case "юридично-правова допомога":
+                        helpOption = HelpOption.JuridicalHelp;
+                        break;
+                    case "медична допомога":
+                        helpOption = HelpOption.MedicalHelp;
+                        break;
+                    default:
+                        helpOption = HelpOption.SearchForJob;
+                        break;
+                }
+
+                identityUser.HelpOption = helpOption;
+            }
 
             var result = await _userManger.CreateAsync(identityUser, model.Password);
 

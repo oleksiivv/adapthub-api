@@ -91,7 +91,7 @@ namespace adapthub_api.Services
                 var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
                 var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
 
-                string url = $"{_configuration["AppUrl"]}api/auth/confirmemail?userid={identityUser.Id}&token={validEmailToken}";
+                string url = $"http://localhost:3000/confirm-account?userid={identityUser.Id}&token={validEmailToken}";
 
                 await _mailService.SendEmailAsync(identityUser.Email, "Підтверди свій акаунт", $"<h1>AdaptHub</h1>" +
                     $"<p>Підтвердити емейл: <a href='{url}'>Натисни тут</a></p>");

@@ -1,4 +1,5 @@
 ﻿using adapthub_api.Models;
+using adapthub_api.Providers;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels;
 using adapthub_api.ViewModels.Moderator;
@@ -29,7 +30,7 @@ namespace adapthub_api.Repositories
             var moderator = new Moderator
             {
                 Email = data.Email,
-                PasswordHash = data.Password, //TODO: hash
+                PasswordHash = SHA1Provider.Hash(data.Password),
                 FullName = data.FullName,
                 PhoneNumber = data.PhoneNumber,
             };
@@ -51,7 +52,7 @@ namespace adapthub_api.Repositories
 
             if (data.Password != null)
             {
-                moderator.PasswordHash = data.Password;
+                moderator.PasswordHash = SHA1Provider.Hash(data.Password);
             }
 
             if (data.PhoneNumber != null)
@@ -70,14 +71,14 @@ namespace adapthub_api.Repositories
             return moderator;
         }
 
-        public Moderator FindByEmail(string email)
+        public Moderator? FindByEmail(string email)
         {
             return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).Count() > 0 ? _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First() : null;
         }
 
         public bool CheckPassword(string email, string password)
         {
-            return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First().PasswordHash == password; //TODO: hash
+            return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First().PasswordHash.ToLower().Equals(SHA1Provider.Hash(password).ToLower());
         }
 
         public void SeedDB()

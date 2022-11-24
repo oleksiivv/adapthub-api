@@ -6,6 +6,8 @@ using adapthub_api.ViewModels.User;
 using SendGrid.Helpers.Errors.Model;
 using System.Net;
 using System.Reflection.Emit;
+using System.Text;
+using XSystem.Security.Cryptography;
 
 namespace adapthub_api.Repositories
 {
@@ -122,7 +124,7 @@ namespace adapthub_api.Repositories
 
         private CustomerViewModel PrepareResponse(Customer customer)
         {
-            string helpOption;
+            string helpOption = null;
 
             switch (customer.HelpOption)
             {
@@ -135,7 +137,7 @@ namespace adapthub_api.Repositories
                 case HelpOption.MedicalHelp:
                     helpOption = "Медична допомога";
                     break;
-                default:
+                case HelpOption.SearchForJob:
                     helpOption = "Пошук роботи";
                     break;
             }

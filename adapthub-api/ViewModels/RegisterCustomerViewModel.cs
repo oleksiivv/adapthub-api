@@ -10,7 +10,6 @@ namespace adapthub_api.ViewModels
 {
     public class RegisterCustomerViewModel
     {
-
         [Required]
         [StringLength(50)]
         [EmailAddress]

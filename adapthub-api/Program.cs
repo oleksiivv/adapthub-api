@@ -40,7 +40,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddSingleton(new EmailConfiguration
 {
     From = "testttt621@gmail.com",
-    Password = "<paste pswd here>",
+    Password = "gcpqfioeurckanxw",
     SmtpServer = "smtp.gmail.com",
     Port = 465,
     UserName = "testttt621@gmail.com",
@@ -56,6 +56,8 @@ builder.Services.AddIdentityCore<Customer>(options => options.SignIn.RequireConf
 builder.Services.Configure<IdentityOptions>(opts =>
 {
     opts.SignIn.RequireConfirmedEmail = true;
+    opts.User.AllowedUserNameCharacters = string.Empty;
+    opts.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddAuthentication(auth =>

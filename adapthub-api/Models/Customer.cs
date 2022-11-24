@@ -1,5 +1,6 @@
 ﻿using adapthub_api.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace adapthub_api.Models
 {
@@ -12,11 +13,14 @@ namespace adapthub_api.Models
 
         public GenderType Gender { get; set; }
 
-        public HelpOption HelpOption { get; set; }
+        [AllowNull]
+        public HelpOption? HelpOption { get; set; }
 
-        public string CurrentAddress { get; set; }
+        [AllowNull]
+        public string? CurrentAddress { get; set; }
 
-        public string PhoneNumber { get; set; }
+        [AllowNull]
+        public string? PhoneNumber { get; set; }
 
         public CustomerExperience Experience { get; set; }
     }

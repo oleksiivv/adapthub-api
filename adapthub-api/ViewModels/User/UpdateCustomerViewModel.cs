@@ -28,5 +28,8 @@ namespace adapthub_api.ViewModels.User
 
         [AllowNull]
         public CustomerExperienceViewModel? Experience { get; set; }
+
+        [AllowNull]
+        public string? HelpOption { get; set; }
     }
 }

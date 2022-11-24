@@ -40,5 +40,19 @@ namespace adapthub_api.Controllers
 
             return _customerRepository.Update(data);
         }
+
+        [HttpPut("{id}/help")]
+        public CustomerViewModel ChooseHelp(int id, string help, [FromHeader] string token)
+        {
+            _tokenService.CheckAccess(token, "Customer", id);
+
+            var updateCussstsomerViewModel = new UpdateCustomerViewModel
+            {
+                Id = id,
+                HelpOption = help,
+            };
+
+            return _customerRepository.Update(updateCussstsomerViewModel);
+        }
     }
 }

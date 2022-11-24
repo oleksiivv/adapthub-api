@@ -12,6 +12,8 @@ namespace adapthub_api.Models
 
         public GenderType Gender { get; set; }
 
+        public HelpOption HelpOption { get; set; }
+
         public string CurrentAddress { get; set; }
 
         public string PhoneNumber { get; set; }

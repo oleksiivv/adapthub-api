@@ -4,7 +4,9 @@ using adapthub_api.Services;
 using adapthub_api.ViewModels.Moderator;
 using adapthub_api.ViewModels.User;
 using adapthub_api.ViewModels.Vacancy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,6 +37,18 @@ namespace adapthub_api.Controllers
         public Moderator Post([FromBody] CreateModeratorViewModel data)
         {
             return _moderatorRepository.Create(data);
+        }
+
+        [HttpPut("{id}")]
+        public Moderator Put(int id, [FromHeader] string token,  [FromBody] UpdateModeratorViewModel data)
+        {
+            _tokenService.CheckAccess(token, "Moderator", id);
+            data.Id = id;
+
+            var moderator = _moderatorRepository.Update(data);
+            moderator.PasswordHash = null;
+
+            return moderator;
         }
 
         [HttpPost("/seed")]

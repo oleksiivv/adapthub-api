@@ -63,6 +63,27 @@ namespace adapthub_api.Repositories
             {
                 user = UpdateUserExperience(user.Id, data.Experience);
             }
+            if(data.HelpOption != null)
+            {
+                HelpOption helpOption;
+                switch (data.HelpOption.ToLower())
+                {
+                    case "соціальна допомога":
+                        helpOption = HelpOption.SocialHelp;
+                        break;
+                    case "юридично-правова допомога":
+                        helpOption = HelpOption.JuridicalHelp;
+                        break;
+                    case "медична допомога":
+                        helpOption = HelpOption.MedicalHelp;
+                        break;
+                    default:
+                        helpOption = HelpOption.SearchForJob;
+                        break;
+                }
+
+                user.HelpOption = helpOption;
+            }
 
             _data.Update(user);
 
@@ -101,6 +122,23 @@ namespace adapthub_api.Repositories
 
         private CustomerViewModel PrepareResponse(Customer customer)
         {
+            string helpOption;
+
+            switch (customer.HelpOption)
+            {
+                case HelpOption.SocialHelp:
+                    helpOption = "Соціальна допомога";
+                    break;
+                case HelpOption.JuridicalHelp:
+                    helpOption = "Юридично-Правова допомога";
+                    break;
+                case HelpOption.MedicalHelp:
+                    helpOption = "Медична допомога";
+                    break;
+                default:
+                    helpOption = "Пошук роботи";
+                    break;
+            }
             return new CustomerViewModel
             {
                 Id = customer.Id,
@@ -115,6 +153,7 @@ namespace adapthub_api.Repositories
                 IDCode = customer.IDCode,
                 CurrentAddress = customer.CurrentAddress,
                 PhoneNumber = customer.PhoneNumber,
+                HelpOption = helpOption,
             };
         }
     }

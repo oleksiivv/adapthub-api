@@ -29,8 +29,8 @@ namespace adapthub_api.Services
             var vacancy = _vacancyRepository.Find(vacancyId);
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
 
-            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Пропозиція з роботи", $"Ви отримали пропозицію на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization}" +
-                    $"<a href='#'>Переглянути вакансію</a>");
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Пропозиція з роботи", $"Ви отримали пропозицію на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name}" +
+                    $"<a href='http://localhost:3000/vacancies?id={vacancyId}'>Переглянути вакансію</a>");
         }
 
         public async Task AskForVacancy(int vacancyId, int jobRequestId)
@@ -38,8 +38,11 @@ namespace adapthub_api.Services
             var vacancy = _vacancyRepository.Find(vacancyId);
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
 
-            await _mailService.SendEmailAsync(vacancy.Organization.Email, "Заява від кандидата на вашу вакансію", $"<h1>Заявка на вакансію {vacancy.Speciality}-{vacancyId} </h1>" +
-                    $"<a href='#'>Переглянути заявку</a>");
+            string url = $"http://localhost:3000/accept-request?vacancyId={vacancyId}&requestId={jobRequestId}";
+
+
+            await _mailService.SendEmailAsync(vacancy.Organization.Email, "Заява від кандидата на вашу вакансію", $"<h1>Заявка на вакансію {vacancy.Speciality} </h1>" +
+                    $"<a href='{url}'>Переглянути заявку</a>");
         }
 
         public async Task CancelJobRequestForVacancy(int vacancyId, int jobRequestId)
@@ -56,6 +59,7 @@ namespace adapthub_api.Services
             {
                 Id = vacancyId,
                 Status = StatusType.Past.ToString(),
+                ChosenJobRequest = jobRequestId,
             });
 
             var jobRequest = _jobRequestRepository.Update(new UpdateJobRequestViewModel
@@ -65,7 +69,7 @@ namespace adapthub_api.Services
             });
 
             await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Нова вакансія для вас", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization} було схваленою.</h1>" +
-                    $"<a href='#'>Переглянути вакансію</a>");
+                    $"<a href='http://localhost:3000/vacancies?id={vacancyId}'>Переглянути вакансію</a>");
         }
     }
 }

@@ -90,7 +90,7 @@ namespace adapthub_api.Services
             }
             else if (type.Equals("Moderator"))
             {
-                var user = _moderatorRepository.Find(Convert.ToInt32(id));
+                var user = _moderatorRepository.Find(id);
 
                 if (user == null)
                 {
@@ -99,7 +99,7 @@ namespace adapthub_api.Services
             }
             else if (type.Equals("Organization"))
             {
-                var user = _organizationRepository.Find(Convert.ToInt32(id));
+                var user = _organizationRepository.Find(id);
 
                 if (user == null)
                 {

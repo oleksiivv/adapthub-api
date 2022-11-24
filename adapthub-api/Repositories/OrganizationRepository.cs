@@ -17,16 +17,12 @@ namespace adapthub_api.Repositories
         {
             var organization = _data.Organizations.Find(id);
 
-            _data.Entry(organization).Reference("User").Load();
-
             return organization;
         }
 
         public IEnumerable<Organization> List(FilterOrganizationViewModel filter, string sort, int from, int to)
         {
             var organizations = _data.Organizations.Where(x => (x.Name == filter.Name || filter.Name == null));
-
-            _data.Entry(organizations).Reference("User").Load();
 
             switch (sort.ToLower())
             {

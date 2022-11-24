@@ -37,6 +37,9 @@ namespace adapthub_api.ViewModels
         public string? Gender { get; set; }
 
         [AllowNull]
+        public string? HelpOption { get; set; }
+
+        [AllowNull]
         public string? CurrentAddress { get; set; }
 
         [AllowNull]

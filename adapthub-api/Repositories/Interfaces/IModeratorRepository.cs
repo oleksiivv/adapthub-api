@@ -11,6 +11,8 @@ namespace adapthub_api.Repositories.Interfaces
 
         public Moderator Create(CreateModeratorViewModel data);
 
+        public Moderator Update(UpdateModeratorViewModel data);
+
         public Moderator FindByEmail(string email);
 
         public bool CheckPassword(string email, string password);

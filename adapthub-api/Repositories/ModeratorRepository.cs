@@ -40,6 +40,36 @@ namespace adapthub_api.Repositories
             return moderator;
         }
 
+        public Moderator Update(UpdateModeratorViewModel data)
+        {
+            var moderator = _data.Moderators.Find(data.Id);
+
+            if (data.Email != null)
+            {
+                moderator.Email = data.Email;
+            }
+
+            if (data.Password != null)
+            {
+                moderator.PasswordHash = data.Password;
+            }
+
+            if (data.PhoneNumber != null)
+            {
+                moderator.PhoneNumber = data.PhoneNumber;
+            }
+
+            if (data.FullName != null)
+            {
+                moderator.FullName = data.FullName;
+            }
+
+            _data.Update(moderator);
+            _data.SaveChanges();
+
+            return moderator;
+        }
+
         public Moderator FindByEmail(string email)
         {
             return _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).Count() > 0 ? _data.Moderators.Where(x => x.Email.ToLower().Equals(email)).First() : null;
@@ -70,7 +100,8 @@ namespace adapthub_api.Repositories
                             Education = "НУ ЛП, спеціальність - ІПЗ, бакалавр, рік закінчення - 2021",
                             Experience = "Freelance - рік",
                             Profession = "Інженер ПЗ, напрямок - Data Science"
-                        }
+                        },
+                        HelpOption = HelpOption.SearchForJob,
                     });
             _data.Customers.Add(
                     new Customer
@@ -90,7 +121,8 @@ namespace adapthub_api.Repositories
                             Education = "Повна середня",
                             Experience = "2 роки",
                             Profession = "Різноробочий"
-                        }
+                        },
+                        HelpOption = HelpOption.SearchForJob,
                     });
 
             _data.Customers.Add(
@@ -111,7 +143,8 @@ namespace adapthub_api.Repositories
                             Education = "НУ ЛП, спеціальність - КН, бакалавр, рік закінчення - 2019",
                             Experience = "Epam Systems - 1.5 року, Freelance - 20 місяців",
                             Profession = "Спец. у галузі КН, напрямок - BE"
-                        }
+                        },
+                        HelpOption = HelpOption.SearchForJob,
                     }
             );
 
@@ -198,7 +231,8 @@ namespace adapthub_api.Repositories
                         Education = "Повна вища",
                         Experience = "Працівник на складі - рік",
                         Profession = "Різноробочий"
-                    }
+                    },
+                    HelpOption = HelpOption.SearchForJob,
                 },
                 Status = StatusType.Confirmed,
                 Speciality = "Працівник на складі",
@@ -225,7 +259,8 @@ namespace adapthub_api.Repositories
                                 Education = "Повна вища",
                                 Experience = "Касир - рік",
                                 Profession = "Бугалтер"
-                            }
+                            },
+                            HelpOption = HelpOption.SearchForJob,
                         },
                         Status = StatusType.Confirmed,
                         Speciality = "Касир",
@@ -251,7 +286,8 @@ namespace adapthub_api.Repositories
                                 Education = "Повна вища",
                                 Experience = "Відсутній",
                                 Profession = "Кухар-кондитер"
-                            }
+                            },
+                            HelpOption = HelpOption.SearchForJob,
                         },
                         Status = StatusType.Confirmed,
                         Speciality = "Працівник на кухню",

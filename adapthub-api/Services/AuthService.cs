@@ -42,6 +42,23 @@ namespace adapthub_api.Services
             GenderType gender;
             Enum.TryParse(model.Gender, out gender);
 
+            HelpOption helpOption;
+            switch (model.HelpOption.ToLower())
+            {
+                case "соціальна допомога":
+                    helpOption = HelpOption.SocialHelp;
+                    break;
+                case "юридично-правова допомога":
+                    helpOption = HelpOption.JuridicalHelp;
+                    break;
+                case "медична допомога":
+                    helpOption = HelpOption.MedicalHelp;
+                    break;
+                default:
+                    helpOption = HelpOption.SearchForJob;
+                    break;
+            }
+
             var identityUser = new Customer
             {
                 Email = model.Email,
@@ -56,7 +73,8 @@ namespace adapthub_api.Services
                     Education = model.Experience.Education,
                     PastJob = model.Experience.PastJob,
                     Profession = model.Experience.Profession,
-                }
+                },
+                HelpOption = helpOption,
             };
 
             var result = await _userManger.CreateAsync(identityUser, model.Password);

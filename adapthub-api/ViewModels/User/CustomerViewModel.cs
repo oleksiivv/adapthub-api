@@ -25,6 +25,8 @@ namespace adapthub_api.ViewModels.User
 
         public string Gender { get; set; }
 
+        public string HelpOption { get; set; }
+
         public string CurrentAddress { get; set; }
 
         public string PhoneNumber { get; set; }

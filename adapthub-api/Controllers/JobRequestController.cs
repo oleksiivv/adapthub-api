@@ -25,7 +25,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public ListJobRequests Get([FromBody] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
+        public ListJobRequests Get([FromQuery] FilterJobRequestViewModel filter, string sort = "Id", string dir = "asc", int from = 0, int to = 10)
         {
             return _jobRequestRepository.List(filter, sort, dir, from, to);
         }

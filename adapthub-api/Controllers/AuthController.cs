@@ -69,7 +69,7 @@ namespace adapthub_api.Controllers
 
         // /api/auth/confirmemail?userid&token
         [HttpGet("ConfirmEmail")]
-        [ProducesResponseType(typeof(UserManagerResponse), 200)]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))

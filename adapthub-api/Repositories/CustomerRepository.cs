@@ -98,6 +98,10 @@ namespace adapthub_api.Repositories
         {
             var customer = _data.Customers.Find(customerId);
 
+            if(customer.Experience == null)
+            {
+                customer.Experience = new CustomerExperience();
+            }
             if (expereience.Education != null)
             {
                 customer.Experience.Education = expereience.Education;

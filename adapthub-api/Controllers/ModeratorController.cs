@@ -7,6 +7,7 @@ using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SendGrid.Helpers.Errors.Model;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,11 +27,23 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet("{id}")]
-        public Moderator Get(int id, [FromHeader] string token)
+        [ProducesResponseType(typeof(Moderator), 200)]
+        public async Task<IActionResult> Get(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Moderator", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Moderator", id);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _moderatorRepository.Find(id);
+            return Ok(_moderatorRepository.Find(id));
         }
 
         [HttpPost]
@@ -40,15 +53,28 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public Moderator Put(int id, [FromHeader] string token,  [FromBody] UpdateModeratorViewModel data)
+        [ProducesResponseType(typeof(Moderator), 200)]
+        public async Task<IActionResult> Put(int id, [FromHeader] string token,  [FromBody] UpdateModeratorViewModel data)
         {
-            _tokenService.CheckAccess(token, "Moderator", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Moderator", id);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+
             data.Id = id;
 
             var moderator = _moderatorRepository.Update(data);
             moderator.PasswordHash = null;
 
-            return moderator;
+            return Ok(moderator);
         }
 
         [HttpPost("/seed")]

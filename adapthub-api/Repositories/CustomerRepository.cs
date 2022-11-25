@@ -91,14 +91,17 @@ namespace adapthub_api.Repositories
 
             _data.SaveChanges();
 
+            _data.Entry(user).Reference("Experience").Load();
+
             return PrepareResponse(user);
         }
 
         public Customer UpdateUserExperience(int customerId, CustomerExperienceViewModel expereience)
         {
             var customer = _data.Customers.Find(customerId);
+            _data.Entry(customer).Reference("Experience").Load();
 
-            if(customer.Experience == null)
+            if (customer.Experience == null)
             {
                 customer.Experience = new CustomerExperience();
             }
@@ -160,6 +163,7 @@ namespace adapthub_api.Repositories
                 CurrentAddress = customer.CurrentAddress,
                 PhoneNumber = customer.PhoneNumber,
                 HelpOption = helpOption,
+                Experience = customer.Experience,
             };
         }
     }

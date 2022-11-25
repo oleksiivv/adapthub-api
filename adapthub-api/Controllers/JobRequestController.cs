@@ -2,8 +2,14 @@
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.Services;
 using adapthub_api.ViewModels.JobRequest;
+using adapthub_api.ViewModels.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit.Encodings;
 using Newtonsoft.Json.Linq;
+using SendGrid.Helpers.Errors.Model;
+using System.Net;
+using System.Web.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -37,28 +43,63 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPost]
-        public JobRequestViewModel Post([FromBody] CreateJobRequestViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(JobRequestViewModel), 200)]
+        public async Task<IActionResult> Post([FromBody] CreateJobRequestViewModel data, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer");
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _jobRequestRepository.Create(data);
+            return Ok(_jobRequestRepository.Create(data));
         }
 
         [HttpPut("{id}")]
-        public JobRequestViewModel Put(int id, [FromBody] UpdateJobRequestViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(JobRequestViewModel), 200)]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateJobRequestViewModel data, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer");
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             data.Id = id;
             data.Status = null;
 
-            return _jobRequestRepository.Update(data);
+            return Ok(_jobRequestRepository.Update(data));
         }
 
         [HttpPut("{id}/vacancy/{vacancyId}")]
         public async Task<IActionResult> AskForJobRequest(int id, int vacancyId, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization");
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             var result = _vacancyProcessService.AskForJobRequest(vacancyId, id);
 
@@ -73,23 +114,47 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public JobRequestViewModel UpdateStatus(int id, string status, [FromHeader] string token)
+        [ProducesResponseType(typeof(JobRequestViewModel), 200)]
+        public async Task<IActionResult> UpdateStatus(int id, string status, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Moderator");
+            try
+            {
+                _tokenService.CheckAccess(token, "Moderator");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _jobRequestRepository.Update(new UpdateJobRequestViewModel
+            return Ok(_jobRequestRepository.Update(new UpdateJobRequestViewModel
             {
                 Id = id,
                 Status = status,
-            });
+            }));
         }
 
         [HttpDelete("{id}")]
-        public JobRequestViewModel Delete(int id, [FromHeader] string token)
+        [ProducesResponseType(typeof(JobRequestViewModel), 200)]
+        public async Task<IActionResult> Delete(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer");
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _jobRequestRepository.Delete(id);
+            return Ok(_jobRequestRepository.Delete(id));
         }
     }
 }

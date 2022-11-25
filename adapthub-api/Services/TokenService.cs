@@ -1,6 +1,7 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Helpers.Errors.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -75,7 +76,7 @@ namespace adapthub_api.Services
             {
                 if (id != expectedId)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                    throw new UnauthorizedAccessException("unauthorized");
                 }
             }
 
@@ -85,7 +86,7 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    throw new ForbiddenException("forbidden");
                 }
             }
             else if (type.Equals("Moderator"))
@@ -94,7 +95,7 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    throw new ForbiddenException("forbidden");
                 }
             }
             else if (type.Equals("Organization"))
@@ -103,12 +104,12 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    throw new ForbiddenException("forbidden");
                 }
             }
             else
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                throw new ForbiddenException("forbidden");
             }
         }
     }

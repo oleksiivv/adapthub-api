@@ -37,22 +37,22 @@ namespace adapthub_api.Repositories
             switch (sort.ToLower())
             {
                 case "status":
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Status) : vacancies.OrderByDescending(x => x.Status);
+                    vacancies = direction.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Status) : vacancies.OrderByDescending(x => x.Status);
                     break;
                 case "organizationid":
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Organization.Id) : vacancies.OrderByDescending(x => x.Organization.Id);
+                    vacancies = direction.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Organization.Id) : vacancies.OrderByDescending(x => x.Organization.Id);
                     break;
                 case "speciality":
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Speciality) : vacancies.OrderByDescending(x => x.Speciality);
+                    vacancies = direction.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Speciality) : vacancies.OrderByDescending(x => x.Speciality);
                     break;
                 case "salary":
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Salary) : vacancies.OrderByDescending(x => x.Salary);
+                    vacancies = direction.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Salary) : vacancies.OrderByDescending(x => x.Salary);
                     break;
                 case "experience":
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.MinExperience) : vacancies.OrderByDescending(x => x.MinExperience);
+                    vacancies = direction.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.MinExperience) : vacancies.OrderByDescending(x => x.MinExperience);
                     break;
                 default:
-                    vacancies = sort.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Id) : vacancies.OrderByDescending(x => x.Id);
+                    vacancies = direction.ToLower().Equals("asc") ? vacancies.OrderBy(x => x.Id) : vacancies.OrderByDescending(x => x.Id);
                     break;
             }
 

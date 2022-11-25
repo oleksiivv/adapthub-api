@@ -28,7 +28,7 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public ListVacancies Get([FromBody] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
+        public ListVacancies Get([FromQuery] FilterVacancyViewModel filter, int from = 0, int to = 10, string sort = "Id", string dir = "asc")
         {
             return _vacancyRepository.List(filter, sort, dir, from, to);
         }

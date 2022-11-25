@@ -33,19 +33,19 @@ namespace adapthub_api.Repositories
             switch (sort.ToLower())
             {
                 case "status":
-                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Status) : jobRequests.OrderByDescending(x => x.Status);
+                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Status) : jobRequests.OrderByDescending(x => x.Status);
                     break;
                 case "customerid":
-                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Customer.Id) : jobRequests.OrderByDescending(x => x.Customer.Id);
+                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Customer.Id) : jobRequests.OrderByDescending(x => x.Customer.Id);
                     break;
                 case "speciality":
-                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Speciality) : jobRequests.OrderByDescending(x => x.Speciality);
+                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Speciality) : jobRequests.OrderByDescending(x => x.Speciality);
                     break;
                 case "expectedsalary":
-                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.ExpectedSalary) : jobRequests.OrderByDescending(x => x.ExpectedSalary);
+                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.ExpectedSalary) : jobRequests.OrderByDescending(x => x.ExpectedSalary);
                     break;
                 default:
-                    jobRequests = sort.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Id) : jobRequests.OrderByDescending(x => x.Id);
+                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Id) : jobRequests.OrderByDescending(x => x.Id);
                     break;
             }
 

@@ -172,3 +172,5 @@ F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\MailKit.dll
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\MimeKit.dll
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\NETCore.MailKit.dll
 F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\BouncyCastle.Crypto.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\Microsoft.Practices.ServiceLocation.dll
+F:\ASP NET\adapthub-api\AdapthubApiTests\bin\Debug\net6.0\XAct.Core.PCL.dll

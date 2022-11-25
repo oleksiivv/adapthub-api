@@ -1,10 +1,14 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
+using adapthub_api.Responses;
 using adapthub_api.Services;
 using adapthub_api.ViewModels.User;
 using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SendGrid.Helpers.Errors.Model;
+using System.Net;
+using System.Web.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,27 +28,64 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet("{id}")]
-        public CustomerViewModel Get(int id, [FromHeader] string token)
+        [ProducesResponseType(typeof(CustomerViewModel), 200)]
+        public async Task<IActionResult> Get(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer", id);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _customerRepository.Find(id);
+            return Ok(_customerRepository.Find(id));
         }
 
         [HttpPut("{id}")]
-        public CustomerViewModel Put(int id, [FromBody] UpdateCustomerViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(CustomerViewModel), 200)]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateCustomerViewModel data, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer", id);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                return StatusCode(401);
+            } 
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             data.Id = id;
 
-            return _customerRepository.Update(data);
+            return Ok(_customerRepository.Update(data));
         }
 
         [HttpPut("{id}/help")]
-        public CustomerViewModel ChooseHelp(int id, string help, [FromHeader] string token)
+        [ProducesResponseType(typeof(CustomerViewModel), 200)]
+        public async Task<IActionResult> ChooseHelp(int id, string help, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer", id);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+
 
             var updateCussstsomerViewModel = new UpdateCustomerViewModel
             {
@@ -52,7 +93,7 @@ namespace adapthub_api.Controllers
                 HelpOption = help,
             };
 
-            return _customerRepository.Update(updateCussstsomerViewModel);
+            return Ok(_customerRepository.Update(updateCussstsomerViewModel));
         }
     }
 }

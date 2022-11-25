@@ -7,6 +7,7 @@ using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SendGrid.Helpers.Errors.Model;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -40,48 +41,107 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPost]
-        public VacancyViewModel Post([FromBody] CreateVacancyViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(VacancyViewModel), 200)]
+        public async Task<IActionResult> Post([FromBody] CreateVacancyViewModel data, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization");
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _vacancyRepository.Create(data);
+            return Ok(_vacancyRepository.Create(data));
         }
 
         [HttpPut("{id}")]
-        public VacancyViewModel Put(int id, [FromBody] UpdateVacancyViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(VacancyViewModel), 200)]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateVacancyViewModel data, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization");
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             data.Id = id;
             data.Status = null;
 
-            return _vacancyRepository.Update(data);
+            return Ok(_vacancyRepository.Update(data));
         }
 
         [HttpPut("{id}/confirm-job-request/{jobRequestId}/confirm")]
-        public VacancyViewModel ConfirmJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
+        [ProducesResponseType(typeof(VacancyViewModel), 200)]
+        public async Task<IActionResult> ConfirmJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization", customerId);
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             _vacancyProcessService.ChooseJobRequestForVacancy(id, jobRequestId);
 
-            return _vacancyRepository.ChooseJobRequest(id, jobRequestId);
+            return Ok(_vacancyRepository.ChooseJobRequest(id, jobRequestId));
         }
 
         [HttpPut("{id}/confirm-job-request/{jobRequestId}/cancel")]
-        public VacancyViewModel CancelJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
+        [ProducesResponseType(typeof(VacancyViewModel), 200)]
+        public async Task<IActionResult> CancelJobRequest(int id, int jobRequestId, int customerId, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization", customerId);
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             _vacancyProcessService.CancelJobRequestForVacancy(id, jobRequestId);
 
-            return _vacancyRepository.Find(id);
+            return Ok(_vacancyRepository.Find(id));
         }
 
         [HttpPut("{id}/job-request/{jobRequestId}")]
         public async Task<IActionResult> AskForVacancy(int id, int jobRequestId, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Customer");
+            try
+            {
+                _tokenService.CheckAccess(token, "Customer");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
             var result = _vacancyProcessService.AskForVacancy(id, jobRequestId);
 
@@ -96,23 +156,47 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public VacancyViewModel UpdateStatus(int id, string status, [FromHeader] string token)
+        [ProducesResponseType(typeof(VacancyViewModel), 200)]
+        public async Task<IActionResult> UpdateStatus(int id, string status, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization");
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _vacancyRepository.Update(new UpdateVacancyViewModel
+            return Ok(_vacancyRepository.Update(new UpdateVacancyViewModel
             {
                 Id = id,
                 Status = status,
-            });
+            }));
         }
 
         [HttpDelete("{id}")]
-        public VacancyViewModel Delete(int id, [FromHeader] string token)
+        [ProducesResponseType(typeof(VacancyViewModel), 200)]
+        public async Task<IActionResult> Delete(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization");
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _vacancyRepository.Delete(id);
+            return Ok(_vacancyRepository.Delete(id));
         }
     }
 }

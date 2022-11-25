@@ -6,6 +6,7 @@ using adapthub_api.Repositories;
 using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.Services;
 using Newtonsoft.Json.Linq;
+using SendGrid.Helpers.Errors.Model;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -40,29 +41,65 @@ namespace adapthub_api.Controllers
         }
 
         [HttpPost]
-        public Organization Post([FromBody] CreateOrganizationViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(Organization), 200)]
+        public async Task<IActionResult> Post([FromBody] CreateOrganizationViewModel data, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Moderator");
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _organizationRepository.Create(data);
+            return Ok(_organizationRepository.Create(data));
         }
 
         [HttpPut("{id}")]
-        public Organization Put(int id, [FromBody] UpdateOrganizationViewModel data, [FromHeader] string token)
+        [ProducesResponseType(typeof(Organization), 200)]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateOrganizationViewModel data, [FromHeader] string token)
         {
             data.Id = id;
 
-            _tokenService.CheckAccess(token, "Organization", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization", id);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _organizationRepository.Update(data);
+            return Ok(_organizationRepository.Update(data));
         }
 
         [HttpDelete("{id}")]
-        public Organization Delete(int id, [FromHeader] string token)
+        [ProducesResponseType(typeof(Organization), 200)]
+        public async Task<IActionResult> Delete(int id, [FromHeader] string token)
         {
-            _tokenService.CheckAccess(token, "Organization", id);
+            try
+            {
+                _tokenService.CheckAccess(token, "Organization", id);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
 
-            return _organizationRepository.Delete(id);
+            return Ok(_organizationRepository.Delete(id));
         }
     }
 }

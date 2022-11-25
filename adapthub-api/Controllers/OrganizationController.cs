@@ -25,18 +25,9 @@ namespace adapthub_api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Organization> Get([FromBody] FilterOrganizationViewModel filter, int from = 0, int to = 10, string sort = "Id")
+        public ListOrganizations Get([FromQuery] FilterOrganizationViewModel filter, int from = 0, int to = 10, string sort = "Id", string direction = "asc")
         {
-            var organizations = _organizationRepository.List(filter, sort, from, to).ToList();
-
-            for(int i=0; i<organizations.Count(); i++)
-            {
-                var organization = organizations[i];
-                organization.PasswordHash = null;
-                organizations[i] = organization;
-            }
-
-            return organizations;
+            return _organizationRepository.List(filter, sort, direction, from, to); 
         }
 
         [HttpGet("{id}")]

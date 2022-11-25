@@ -1,7 +1,9 @@
 ﻿using adapthub_api.Models;
 using adapthub_api.Providers;
 using adapthub_api.Repositories.Interfaces;
+using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.Organization;
+using adapthub_api.ViewModels.Vacancy;
 using SendGrid.Helpers.Errors.Model;
 using System.Net;
 
@@ -21,23 +23,36 @@ namespace adapthub_api.Repositories
             return organization;
         }
 
-        public IEnumerable<Organization> List(FilterOrganizationViewModel filter, string sort, int from, int to)
+        public ListOrganizations List(FilterOrganizationViewModel filter, string sort,  string direction, int from, int to)
         {
             var organizations = _data.Organizations.Where(x => (x.Name == filter.Name || filter.Name == null));
 
             switch (sort.ToLower())
             {
                 case "name":
-                    organizations = sort.ToLower().Equals("asc") ? organizations.OrderBy(x => x.Name) : organizations.OrderByDescending(x => x.Name);
+                    organizations = direction.ToLower().Equals("asc") ? organizations.OrderBy(x => x.Name) : organizations.OrderByDescending(x => x.Name);
                     break;
                 case "sitelink":
-                    organizations = sort.ToLower().Equals("asc") ? organizations.OrderBy(x => x.SiteLink) : organizations.OrderByDescending(x => x.SiteLink);
+                    organizations = direction.ToLower().Equals("asc") ? organizations.OrderBy(x => x.SiteLink) : organizations.OrderByDescending(x => x.SiteLink);
                     break;
                 default:
-                    organizations = sort.ToLower().Equals("asc") ? organizations.OrderBy(x => x.Id) : organizations.OrderByDescending(x => x.Id);
+                    organizations = direction.ToLower().Equals("asc") ? organizations.OrderBy(x => x.Id) : organizations.OrderByDescending(x => x.Id);
                     break;
             }
-            return organizations.Skip(from).Take(to - from);
+            organizations = organizations.Skip(from).Take(to - from);
+
+            var organizationViewModels = new List<Organization>();
+
+            foreach (Organization organization in organizations)
+            {
+                organizationViewModels.Add(organization);
+            }
+
+            return new ListOrganizations
+            {
+                Data = organizationViewModels,
+                TotalCount = _data.Organizations.Count(),
+            };
         }
 
         public Organization Create(CreateOrganizationViewModel data)

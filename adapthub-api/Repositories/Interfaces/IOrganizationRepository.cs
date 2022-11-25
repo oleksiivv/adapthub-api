@@ -1,4 +1,5 @@
 ﻿using adapthub_api.Models;
+using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.Organization;
 using SendGrid.Helpers.Errors.Model;
 using System.Xml.Linq;
@@ -8,7 +9,7 @@ namespace adapthub_api.Repositories.Interfaces
     public interface IOrganizationRepository
     {
         public Organization Find(int id);
-        public IEnumerable<Organization> List(FilterOrganizationViewModel filter, string sort, int from, int to);
+        public ListOrganizations List(FilterOrganizationViewModel filter, string sort, string direction, int from, int to);
 
         public Organization Create(CreateOrganizationViewModel data);
 

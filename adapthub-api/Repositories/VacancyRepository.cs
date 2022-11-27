@@ -32,7 +32,10 @@ namespace adapthub_api.Repositories
             if(!Enum.TryParse(filter.Status, out StatusType status)) 
                 status = StatusType.Empty;
 
-            var vacancies = _data.Vacancies.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null));
+            string preparedSpeciality = string.Empty;
+            if (filter.Speciality != null) preparedSpeciality = filter.Speciality.ToLower();
+
+            var vacancies = _data.Vacancies.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Organization.Id == filter.OrganizationId || filter.OrganizationId == null) && ((string.IsNullOrEmpty(preparedSpeciality) ? true : x.Speciality.ToLower().Contains(preparedSpeciality)) || filter.Speciality == null) && (x.Salary >= filter.Salary || filter.Salary == null) && (x.MinExperience <= filter.MinExperience || filter.MinExperience == null));
 
             switch (sort.ToLower())
             {

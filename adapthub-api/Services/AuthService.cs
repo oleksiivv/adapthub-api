@@ -31,12 +31,12 @@ namespace adapthub_api.Services
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterCustomerViewModel model)
         {
             if (model == null)
-                throw new NullReferenceException("Reigster Model is null");
+                throw new NullReferenceException("Вхідні дані не є валідними.");
 
             if (model.Password != model.ConfirmPassword)
                 return new UserManagerResponse
                 {
-                    Message = "Confirm password doesn't match the password",
+                    Message = "Паролі не співпадають.",
                     IsSuccess = false,
                 };
             GenderType gender;
@@ -99,14 +99,14 @@ namespace adapthub_api.Services
 
                 return new UserManagerResponse
                 {
-                    Message = "User created successfully!",
+                    Message = "Користувача створено успішно.",
                     IsSuccess = true,
                 };
             }
 
             return new UserManagerResponse
             {
-                Message = "User did not create",
+                Message = "Користувача не створено. Щось пішло не так.",
                 IsSuccess = false,
                 Errors = result.Errors.Select(e => e.Description)
             };
@@ -138,7 +138,7 @@ namespace adapthub_api.Services
                     {
                         return new UserManagerResponse
                         {
-                            Message = "There is no user with that Email address",
+                            Message = "Користувача з введеною адресою не знайдено",
                             IsSuccess = false,
                         };
                     }
@@ -171,7 +171,7 @@ namespace adapthub_api.Services
                     {
                         return new UserManagerResponse
                         {
-                            Message = "Invalid password",
+                            Message = "Невірний пароль.",
                             IsSuccess = false,
                         };
                     }
@@ -203,7 +203,7 @@ namespace adapthub_api.Services
                 return new UserManagerResponse
                 {
                     IsSuccess = false,
-                    Message = "User not found"
+                    Message = "Користувача не знайдено."
                 };
 
             /*if (!_tokenService.ValidateToken(_configuration["AuthSettings:Key"], _configuration["AuthSettings:Issuer"], _configuration["AuthSettings:Audience"], token))
@@ -223,14 +223,14 @@ namespace adapthub_api.Services
             if (result.Succeeded)
                 return new UserManagerResponse
                 {
-                    Message = "Email confirmed successfully!",
+                    Message = "Електронну адресу підтверджено.",
                     IsSuccess = true,
                 };
 
             return new UserManagerResponse
             {
                 IsSuccess = false,
-                Message = "Email did not confirmed",
+                Message = "Електронну адресу не підтверджено.",
                 Errors = result.Errors.Select(e => e.Description)
             };
         }
@@ -242,7 +242,7 @@ namespace adapthub_api.Services
                 return new UserManagerResponse
                 {
                     IsSuccess = false,
-                    Message = "No user associated with email",
+                    Message = "Користувача не знайдено.",
                 };
 
             var token = await _userManger.GeneratePasswordResetTokenAsync(user);
@@ -256,7 +256,7 @@ namespace adapthub_api.Services
             return new UserManagerResponse
             {
                 IsSuccess = true,
-                Message = "Reset password URL has been sent to the email successfully!"
+                Message = "URL для зміни паролю було надіслано успішно."
             };
         }
 
@@ -267,14 +267,14 @@ namespace adapthub_api.Services
                 return new UserManagerResponse
                 {
                     IsSuccess = false,
-                    Message = "No user associated with email",
+                    Message = "Користувача не знайдено.",
                 };
 
             if (model.NewPassword != model.ConfirmPassword)
                 return new UserManagerResponse
                 {
                     IsSuccess = false,
-                    Message = "Password doesn't match its confirmation",
+                    Message = "Невірний пароль.",
                 };
 
             var decodedToken = WebEncoders.Base64UrlDecode(model.Token);
@@ -285,13 +285,13 @@ namespace adapthub_api.Services
             if (result.Succeeded)
                 return new UserManagerResponse
                 {
-                    Message = "Password has been reset successfully!",
+                    Message = "Пароль успішно змінено.",
                     IsSuccess = true,
                 };
 
             return new UserManagerResponse
             {
-                Message = "Something went wrong",
+                Message = "Щось пішло не так. Спробуйте знову.",
                 IsSuccess = false,
                 Errors = result.Errors.Select(e => e.Description),
             };

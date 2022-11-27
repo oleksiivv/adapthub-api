@@ -76,7 +76,7 @@ namespace adapthub_api.Services
             {
                 if (id != expectedId)
                 {
-                    throw new UnauthorizedAccessException("unauthorized");
+                    throw new UnauthorizedAccessException("Помилка авторизації.");
                 }
             }
 
@@ -86,7 +86,9 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new ForbiddenException("forbidden");
+                    var user1 = _moderatorRepository.Find(id);
+
+                    if (user1 == null) throw new ForbiddenException("Ви не авторизовані для цієї дії.");
                 }
             }
             else if (type.Equals("Moderator"))
@@ -95,7 +97,7 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new ForbiddenException("forbidden");
+                    throw new ForbiddenException("Ви не авторизовані для цієї дії.");
                 }
             }
             else if (type.Equals("Organization"))
@@ -104,12 +106,14 @@ namespace adapthub_api.Services
 
                 if (user == null)
                 {
-                    throw new ForbiddenException("forbidden");
+                    var user1 = _moderatorRepository.Find(id);
+
+                    if (user1 == null) throw new ForbiddenException("Ви не авторизовані для цієї дії.");
                 }
             }
             else
             {
-                throw new ForbiddenException("forbidden");
+                throw new ForbiddenException("Ви не авторизовані для цієї дії.");
             }
         }
     }

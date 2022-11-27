@@ -19,6 +19,7 @@ namespace adapthub_api.Repositories
             var jobRequest = _data.JobRequests.Find(id);
 
             _data.Entry(jobRequest).Reference("Customer").Load();
+            _data.Entry(jobRequest.Customer).Reference("Experience").Load();
 
             return PrepareResponse(jobRequest);
         }
@@ -28,7 +29,10 @@ namespace adapthub_api.Repositories
             if (!Enum.TryParse(filter.Status, out StatusType status))
                 status = StatusType.Empty;
 
-            var jobRequests = _data.JobRequests.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && (x.Speciality == filter.Speciality || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
+            string preparedSpeciality = string.Empty;
+            if(filter.Speciality != null)preparedSpeciality = filter.Speciality.ToLower();
+
+            var jobRequests = _data.JobRequests.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && ((string.IsNullOrEmpty(preparedSpeciality) ? true : x.Speciality.ToLower().Contains(preparedSpeciality)) || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
 
             switch (sort.ToLower())
             {
@@ -56,6 +60,7 @@ namespace adapthub_api.Repositories
                 if (!_data.Entry(jobRequest).Reference("Customer").IsLoaded)
                 {
                     _data.Entry(jobRequest).Reference("Customer").Load();
+                    _data.Entry(jobRequest.Customer).Reference("Experience").Load();
                 }
             }
 

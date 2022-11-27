@@ -43,7 +43,7 @@ namespace adapthub_api.Controllers
                 return BadRequest(result);
             }
 
-            return BadRequest("Some properties are not valid"); // Status code: 400
+            return BadRequest("Деякі поля невалдні."); // Status code: 400
         }
 
         // /api/auth/login
@@ -64,7 +64,7 @@ namespace adapthub_api.Controllers
                 return BadRequest(result);
             }
 
-            return BadRequest("Some properties are not valid");
+            return BadRequest("Деякі поля невалідні.");
         }
 
         // /api/auth/confirmemail?userid&token
@@ -116,7 +116,7 @@ namespace adapthub_api.Controllers
                 return BadRequest(result);
             }
 
-            return BadRequest("Some properties are not valid");
+            return BadRequest("Деякі поля невалідні.");
         }
 
 

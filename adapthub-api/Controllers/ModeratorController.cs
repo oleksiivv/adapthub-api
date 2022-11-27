@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Errors.Model;
+using System.ComponentModel;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -46,6 +47,7 @@ namespace adapthub_api.Controllers
             return Ok(_moderatorRepository.Find(id));
         }
 
+        //ONLY FOR DEBUG
         [HttpPost]
         public Moderator Post([FromBody] CreateModeratorViewModel data)
         {

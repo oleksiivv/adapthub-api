@@ -24,6 +24,13 @@ namespace adapthub_api.Repositories
             _data.Entry(vacancy).Reference("Organization").Load();
             _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
 
+            if (vacancy.ChosenJobRequest != null)
+            {
+                _data.Entry(vacancy.ChosenJobRequest).Reference("Customer").Load();
+
+                _data.Entry(vacancy.ChosenJobRequest.Customer).Reference("Experience").Load();
+            }
+
             return PrepareResponse(vacancy);
         }
 
@@ -66,6 +73,12 @@ namespace adapthub_api.Repositories
                 if (!_data.Entry(vacancy).Reference("ChosenJobRequest").IsLoaded)
                 {
                     _data.Entry(vacancy).Reference("ChosenJobRequest").Load();
+                    if (vacancy.ChosenJobRequest != null)
+                    {
+                        _data.Entry(vacancy.ChosenJobRequest).Reference("Customer").Load();
+                        
+                        _data.Entry(vacancy.ChosenJobRequest.Customer).Reference("Experience").Load();
+                    }
                 }
                 if (!_data.Entry(vacancy).Reference("Organization").IsLoaded)
                 {

@@ -46,7 +46,7 @@ namespace adapthub_api.Controllers
         {
             try
             {
-                _tokenService.CheckAccess(token, "Moderator");
+                _tokenService.CheckAccess(token, "Organization");
             }
             catch (UnauthorizedAccessException)
             {

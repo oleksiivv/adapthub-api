@@ -51,7 +51,7 @@ namespace adapthub_api.Services
 
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
 
-            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Вашу заявку відхилено", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization} було відхилено. Продовжуйте пошук.</h1>");
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Вашу заявку відхилено", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name} було відхилено. Продовжуйте пошук.</h1>");
         }
         public async Task ChooseJobRequestForVacancy(int vacancyId, int jobRequestId)
         {
@@ -68,7 +68,7 @@ namespace adapthub_api.Services
                 Status = StatusType.Past.ToString(),
             });
 
-            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Нова вакансія для вас", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization} було схваленою.</h1>" +
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Нова вакансія для вас", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name} було схваленою.</h1>" +
                     $"<a href='http://localhost:3000/vacancies?id={vacancyId}'>Переглянути вакансію</a>");
         }
     }

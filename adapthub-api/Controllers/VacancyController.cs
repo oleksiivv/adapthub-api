@@ -1,15 +1,10 @@
-﻿using adapthub_api.Models;
-using adapthub_api.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
 using adapthub_api.Repositories.Interfaces;
-using adapthub_api.Services;
 using adapthub_api.ViewModels.JobRequest;
-using adapthub_api.ViewModels.Organization;
 using adapthub_api.ViewModels.Vacancy;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using adapthub_api.Services;
+using adapthub_api.ViewModels.Organization;
 using SendGrid.Helpers.Errors.Model;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace adapthub_api.Controllers
 {
@@ -23,9 +18,9 @@ namespace adapthub_api.Controllers
 
         public VacancyController(IVacancyRepository vacancyRepository, IVacancyProcessService vacancyProcessService, ITokenService tokenService)
         {
-            _vacancyRepository = vacancyRepository;
-            _vacancyProcessService = vacancyProcessService;
-            _tokenService = tokenService;
+            _vacancyRepository = vacancyRepository ?? throw new ArgumentNullException(nameof(vacancyRepository));
+            _vacancyProcessService = vacancyProcessService ?? throw new ArgumentNullException(nameof(vacancyProcessService));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         [HttpGet]
@@ -50,11 +45,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_vacancyRepository.Create(data));
@@ -70,11 +65,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             data.Id = id;
@@ -93,11 +88,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             _vacancyProcessService.ChooseJobRequestForVacancy(id, jobRequestId);
@@ -115,11 +110,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             _vacancyProcessService.CancelJobRequestForVacancy(id, jobRequestId);
@@ -136,11 +131,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             var result = _vacancyProcessService.AskForVacancy(id, jobRequestId);
@@ -165,11 +160,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_vacancyRepository.Update(new UpdateVacancyViewModel
@@ -189,11 +184,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_vacancyRepository.Delete(id));

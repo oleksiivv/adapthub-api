@@ -1,11 +1,11 @@
-﻿using adapthub_api.Models;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
-using adapthub_api.ViewModels;
 using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.ViewModels.Vacancy;
-using Microsoft.AspNetCore.Identity;
-using System.Configuration;
-using System.Security.Policy;
+using adapthub_api.ViewModels;
 
 namespace adapthub_api.Services
 {
@@ -14,14 +14,14 @@ namespace adapthub_api.Services
         private readonly IMailService _mailService;
         private readonly IVacancyRepository _vacancyRepository;
         private readonly IJobRequestRepository _jobRequestRepository;
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public VacancyProcessService(IMailService mailService, IVacancyRepository vacancyRepository, IJobRequestRepository jobRequestRepository, IConfiguration configuration)
         {
-            _configuration = configuration;
-            _mailService = mailService;
-            _vacancyRepository = vacancyRepository;
-            _jobRequestRepository = jobRequestRepository;
+            _mailService = mailService ?? throw new ArgumentNullException(nameof(mailService));
+            _vacancyRepository = vacancyRepository ?? throw new ArgumentNullException(nameof(vacancyRepository));
+            _jobRequestRepository = jobRequestRepository ?? throw new ArgumentNullException(nameof(jobRequestRepository));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task AskForJobRequest(int vacancyId, int jobRequestId)
@@ -29,8 +29,10 @@ namespace adapthub_api.Services
             var vacancy = _vacancyRepository.Find(vacancyId);
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
 
-            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Пропозиція з роботи", $"Ви отримали пропозицію на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name}" +
-                    $"<a href='http://localhost:3000/vacancies?id={vacancyId}'>Переглянути вакансію</a>");
+            var emailContent = $"Ви отримали пропозицію на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name}" +
+                $"<a href='{_configuration["FrontendUrl"]}/vacancies?id={vacancyId}'>Переглянути вакансію</a>";
+
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Пропозиція з роботи", emailContent);
         }
 
         public async Task AskForVacancy(int vacancyId, int jobRequestId)
@@ -38,21 +40,24 @@ namespace adapthub_api.Services
             var vacancy = _vacancyRepository.Find(vacancyId);
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
 
-            string url = $"http://localhost:3000/accept-request?vacancyId={vacancyId}&requestId={jobRequestId}";
+            var url = $"{_configuration["FrontendUrl"]}/accept-request?vacancyId={vacancyId}&requestId={jobRequestId}";
 
+            var emailContent = $"<h1>Заявка на вакансію {vacancy.Speciality} </h1>" +
+                $"<a href='{url}'>Переглянути заявку</a>";
 
-            await _mailService.SendEmailAsync(vacancy.Organization.Email, "Заява від кандидата на вашу вакансію", $"<h1>Заявка на вакансію {vacancy.Speciality} </h1>" +
-                    $"<a href='{url}'>Переглянути заявку</a>");
+            await _mailService.SendEmailAsync(vacancy.Organization.Email, "Заява від кандидата на вашу вакансію", emailContent);
         }
 
         public async Task CancelJobRequestForVacancy(int vacancyId, int jobRequestId)
         {
             var vacancy = _vacancyRepository.Find(vacancyId);
-
             var jobRequest = _jobRequestRepository.Find(jobRequestId);
 
-            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Вашу заявку відхилено", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name} було відхилено. Продовжуйте пошук.</h1>");
+            var emailContent = $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name} було відхилено. Продовжуйте пошук.</h1>";
+
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Вашу заявку відхилено", emailContent);
         }
+
         public async Task ChooseJobRequestForVacancy(int vacancyId, int jobRequestId)
         {
             var vacancy = _vacancyRepository.Update(new UpdateVacancyViewModel
@@ -68,8 +73,10 @@ namespace adapthub_api.Services
                 Status = StatusType.Past.ToString(),
             });
 
-            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Нова вакансія для вас", $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name} було схваленою.</h1>" +
-                    $"<a href='http://localhost:3000/vacancies?id={vacancyId}'>Переглянути вакансію</a>");
+            var emailContent = $"<h1>Вашу заявку на вакансію за спеціальністю {vacancy.Speciality} від {vacancy.Organization.Name} було схваленою.</h1>" +
+                $"<a href='{_configuration["FrontendUrl"]}/vacancies?id={vacancyId}'>Переглянути вакансію</a>";
+
+            await _mailService.SendEmailAsync(jobRequest.Customer.Email, "Нова вакансія для вас", emailContent);
         }
     }
 }

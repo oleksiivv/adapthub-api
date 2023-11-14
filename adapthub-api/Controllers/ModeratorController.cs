@@ -2,15 +2,8 @@
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.Services;
 using adapthub_api.ViewModels.Moderator;
-using adapthub_api.ViewModels.User;
-using adapthub_api.ViewModels.Vacancy;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Errors.Model;
-using System.ComponentModel;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace adapthub_api.Controllers
 {
@@ -23,66 +16,73 @@ namespace adapthub_api.Controllers
 
         public ModeratorController(IModeratorRepository moderatorRepository, ITokenService tokenService)
         {
-            _moderatorRepository = moderatorRepository;
-            _tokenService = tokenService;
+            _moderatorRepository = moderatorRepository ?? throw new ArgumentNullException(nameof(moderatorRepository));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Moderator), 200)]
-        public async Task<IActionResult> Get(int id, [FromHeader] string token)
+        public IActionResult Get(int id, [FromHeader] string token)
         {
             try
             {
-                _tokenService.CheckAccess(token, "Moderator", id);
+                ValidateTokenAndPermissions(token, "Moderator", id);
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
-            return Ok(_moderatorRepository.Find(id));
+            var moderator = _moderatorRepository.Find(id);
+            return Ok(moderator);
         }
 
-        //ONLY FOR DEBUG
+        // ONLY FOR DEBUG
         [HttpPost]
-        public Moderator Post([FromBody] CreateModeratorViewModel data)
+        public IActionResult Post([FromBody] CreateModeratorViewModel data)
         {
-            return _moderatorRepository.Create(data);
+            var createdModerator = _moderatorRepository.Create(data);
+            return Ok(createdModerator);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Moderator), 200)]
-        public async Task<IActionResult> Put(int id, [FromHeader] string token,  [FromBody] UpdateModeratorViewModel data)
+        public IActionResult Put(int id, [FromHeader] string token, [FromBody] UpdateModeratorViewModel data)
         {
             try
             {
-                _tokenService.CheckAccess(token, "Moderator", id);
+                ValidateTokenAndPermissions(token, "Moderator", id);
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             data.Id = id;
+            var updatedModerator = _moderatorRepository.Update(data);
+            updatedModerator.PasswordHash = null;
 
-            var moderator = _moderatorRepository.Update(data);
-            moderator.PasswordHash = null;
-
-            return Ok(moderator);
+            return Ok(updatedModerator);
         }
 
         [HttpPost("/seed")]
-        public void SeedDB()
+        public IActionResult SeedDB()
         {
             _moderatorRepository.SeedDB();
+            return Ok(); // Assuming you want to return a success status for seeding the database
+        }
+
+        private void ValidateTokenAndPermissions(string token, string role, int id)
+        {
+            _tokenService.CheckAccess(token, role, id);
         }
     }
 }

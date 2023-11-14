@@ -1,25 +1,34 @@
-﻿using adapthub_api.Models;
+﻿using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels;
 using adapthub_api.ViewModels.JobRequest;
 using SendGrid.Helpers.Errors.Model;
-using System.Net;
 
 namespace adapthub_api.Repositories
 {
     public class JobRequestRepository : IJobRequestRepository
     {
-        private DataContext _data;
+        private readonly DataContext _data;
+
         public JobRequestRepository(DataContext data)
         {
-            _data = data;
+            _data = data ?? throw new ArgumentNullException(nameof(data));
         }
+
         public JobRequestViewModel Find(int id)
         {
-            var jobRequest = _data.JobRequests.Find(id);
+            var jobRequest = _data.JobRequests
+                .Include(j => j.Customer)
+                    .ThenInclude(c => c.Experience)
+                .FirstOrDefault(j => j.Id == id);
 
-            _data.Entry(jobRequest).Reference("Customer").Load();
-            _data.Entry(jobRequest.Customer).Reference("Experience").Load();
+            if (jobRequest == null)
+            {
+                throw new NotFoundException();
+            }
 
             return PrepareResponse(jobRequest);
         }
@@ -29,59 +38,43 @@ namespace adapthub_api.Repositories
             if (!Enum.TryParse(filter.Status, out StatusType status))
                 status = StatusType.Empty;
 
-            string preparedSpeciality = string.Empty;
-            if(filter.Speciality != null)preparedSpeciality = filter.Speciality.ToLower();
+            var jobRequestsQuery = _data.JobRequests
+                .Include(j => j.Customer)
+                    .ThenInclude(c => c.Experience)
+                .Where(x => (x.Status == status || status == StatusType.Empty) &&
+                            (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) &&
+                            (string.IsNullOrEmpty(filter.Speciality) || x.Speciality.ToLower().Contains(filter.Speciality.ToLower())) &&
+                            (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
 
-            var jobRequests = _data.JobRequests.Where(x => (x.Status == status || status == StatusType.Empty) && (x.Customer.Id == filter.CustomerId || filter.CustomerId == null) && ((string.IsNullOrEmpty(preparedSpeciality) ? true : x.Speciality.ToLower().Contains(preparedSpeciality)) || filter.Speciality == null) && (x.ExpectedSalary <= filter.ExpectedSalary || filter.ExpectedSalary == null));
-
-            switch (sort.ToLower())
+            jobRequestsQuery = sort.ToLower() switch
             {
-                case "status":
-                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Status) : jobRequests.OrderByDescending(x => x.Status);
-                    break;
-                case "customerid":
-                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Customer.Id) : jobRequests.OrderByDescending(x => x.Customer.Id);
-                    break;
-                case "speciality":
-                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Speciality) : jobRequests.OrderByDescending(x => x.Speciality);
-                    break;
-                case "expectedsalary":
-                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.ExpectedSalary) : jobRequests.OrderByDescending(x => x.ExpectedSalary);
-                    break;
-                default:
-                    jobRequests = direction.ToLower().Equals("asc") ? jobRequests.OrderBy(x => x.Id) : jobRequests.OrderByDescending(x => x.Id);
-                    break;
-            }
+                "status" => direction.ToLower() == "asc" ? jobRequestsQuery.OrderBy(x => x.Status) : jobRequestsQuery.OrderByDescending(x => x.Status),
+                "customerid" => direction.ToLower() == "asc" ? jobRequestsQuery.OrderBy(x => x.Customer.Id) : jobRequestsQuery.OrderByDescending(x => x.Customer.Id),
+                "speciality" => direction.ToLower() == "asc" ? jobRequestsQuery.OrderBy(x => x.Speciality) : jobRequestsQuery.OrderByDescending(x => x.Speciality),
+                "expectedsalary" => direction.ToLower() == "asc" ? jobRequestsQuery.OrderBy(x => x.ExpectedSalary) : jobRequestsQuery.OrderByDescending(x => x.ExpectedSalary),
+                _ => direction.ToLower() == "asc" ? jobRequestsQuery.OrderBy(x => x.Id) : jobRequestsQuery.OrderByDescending(x => x.Id),
+            };
 
-            jobRequests = jobRequests.Skip(from).Take(to - from);
+            var jobRequests = jobRequestsQuery.Skip(from).Take(to - from).ToList();
 
-            foreach (var jobRequest in jobRequests)
+            return new ListJobRequests
             {
-                if (!_data.Entry(jobRequest).Reference("Customer").IsLoaded)
-                {
-                    _data.Entry(jobRequest).Reference("Customer").Load();
-                    _data.Entry(jobRequest.Customer).Reference("Experience").Load();
-                }
-            }
-
-            var jobRequestViewModels = new List<JobRequestViewModel>();
-
-            foreach (var jobRequest in jobRequests)
-            {
-                jobRequestViewModels.Add(PrepareResponse(jobRequest));
-            }
-
-            return new ListJobRequests {
-                Data = jobRequestViewModels,
+                Data = jobRequests.Select(PrepareResponse).ToList(),
                 TotalCount = _data.JobRequests.Count(),
             };
         }
 
         public JobRequestViewModel Create(CreateJobRequestViewModel data)
         {
+            var customer = _data.Customers.Find(data.CustomerId);
+            if (customer == null)
+            {
+                throw new NotFoundException("Customer not found");
+            }
+
             var jobRequest = new JobRequest
             {
-                Customer = _data.Customers.Find(data.CustomerId),
+                Customer = customer,
                 Status = StatusType.InReview,
                 Speciality = data.Speciality,
                 ExpectedSalary = data.ExpectedSalary,
@@ -95,47 +88,28 @@ namespace adapthub_api.Repositories
 
         public JobRequestViewModel Update(UpdateJobRequestViewModel data)
         {
-            var jobRequest = _data.JobRequests.Find(data.Id);
+            var jobRequest = _data.JobRequests
+                .Include(j => j.Customer)
+                .FirstOrDefault(j => j.Id == data.Id);
 
             if (jobRequest == null)
             {
                 throw new NotFoundException();
             }
 
-            //TODO: refactor this logic
-            if (data.CustomerId != null)
-            {
-                jobRequest.Customer = _data.Customers.Find(data.CustomerId);
-            }
-            if (data.Speciality != null)
-            {
-                jobRequest.Speciality = data.Speciality;
-            }
-            if (data.ExpectedSalary != null)
-            {
-                jobRequest.ExpectedSalary = ((int)(data.ExpectedSalary != null ? data.ExpectedSalary : 6000));
-            }
-
-            StatusType status;
-            Enum.TryParse(data.Status, out status);
-
-            if (data.Status != null)
-            {
-                jobRequest.Status = status;
-            }
+            UpdateJobRequestProperties(data, jobRequest);
 
             _data.Update(jobRequest);
-
             _data.SaveChanges();
-
-            _data.Entry(jobRequest).Reference("Customer").Load();
 
             return PrepareResponse(jobRequest);
         }
 
         public JobRequestViewModel Delete(int id)
         {
-            var jobRequest = _data.JobRequests.Find(id);
+            var jobRequest = _data.JobRequests
+                .Include(j => j.Customer)
+                .FirstOrDefault(j => j.Id == id);
 
             if (jobRequest == null)
             {
@@ -143,10 +117,38 @@ namespace adapthub_api.Repositories
             }
 
             _data.JobRequests.Remove(jobRequest);
-
             _data.SaveChanges();
 
             return PrepareResponse(jobRequest);
+        }
+
+        private void UpdateJobRequestProperties(UpdateJobRequestViewModel data, JobRequest jobRequest)
+        {
+            if (data.CustomerId != null)
+            {
+                var customer = _data.Customers.Find(data.CustomerId);
+                if (customer == null)
+                {
+                    throw new NotFoundException("Customer not found");
+                }
+                jobRequest.Customer = customer;
+            }
+
+            if (data.Speciality != null)
+            {
+                jobRequest.Speciality = data.Speciality;
+            }
+
+            if (data.ExpectedSalary != null)
+            {
+                jobRequest.ExpectedSalary = (int)(data.ExpectedSalary ?? 6000);
+            }
+
+            if (data.Status != null)
+            {
+                Enum.TryParse(data.Status, out StatusType status);
+                jobRequest.Status = status;
+            }
         }
 
         private JobRequestViewModel PrepareResponse(JobRequest jobRequest)

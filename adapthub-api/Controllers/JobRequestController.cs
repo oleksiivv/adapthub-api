@@ -1,17 +1,11 @@
-﻿using adapthub_api.Models;
+﻿using System;
+using System.Threading.Tasks;
+using adapthub_api.Models;
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.Services;
 using adapthub_api.ViewModels.JobRequest;
-using adapthub_api.ViewModels.User;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit.Encodings;
-using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Errors.Model;
-using System.Net;
-using System.Web.Http;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace adapthub_api.Controllers
 {
@@ -25,9 +19,9 @@ namespace adapthub_api.Controllers
 
         public JobRequestController(IJobRequestRepository jobRequestRepository, ITokenService tokenService, IVacancyProcessService vacancyProcessService)
         {
-            _jobRequestRepository = jobRequestRepository;
-            _tokenService = tokenService;
-            _vacancyProcessService = vacancyProcessService;
+            _jobRequestRepository = jobRequestRepository ?? throw new ArgumentNullException(nameof(jobRequestRepository));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _vacancyProcessService = vacancyProcessService ?? throw new ArgumentNullException(nameof(vacancyProcessService));
         }
 
         [HttpGet]
@@ -52,11 +46,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_jobRequestRepository.Create(data));
@@ -72,11 +66,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             data.Id = id;
@@ -94,11 +88,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             var result = _vacancyProcessService.AskForJobRequest(vacancyId, id);
@@ -123,11 +117,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_jobRequestRepository.Update(new UpdateJobRequestViewModel
@@ -147,11 +141,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_jobRequestRepository.Delete(id));

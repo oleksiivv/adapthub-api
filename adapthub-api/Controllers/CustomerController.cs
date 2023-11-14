@@ -1,16 +1,9 @@
-﻿using adapthub_api.Models;
-using adapthub_api.Repositories.Interfaces;
+﻿using adapthub_api.Repositories.Interfaces;
 using adapthub_api.Responses;
 using adapthub_api.Services;
 using adapthub_api.ViewModels.User;
-using adapthub_api.ViewModels.Vacancy;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Errors.Model;
-using System.Net;
-using System.Web.Http;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace adapthub_api.Controllers
 {
@@ -23,77 +16,84 @@ namespace adapthub_api.Controllers
 
         public CustomerController(ICustomerRepository customerRepository, ITokenService tokenService)
         {
-            _customerRepository = customerRepository;
-            _tokenService = tokenService;
+            _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(CustomerViewModel), 200)]
-        public async Task<IActionResult> Get(int id, [FromHeader] string token)
+        public IActionResult Get(int id, [FromHeader] string token)
         {
             try
             {
-                _tokenService.CheckAccess(token, "Customer", id);
+                ValidateTokenAndAccess(token, "Customer", id);
             }
-            catch (UnauthorizedAccessException exception)
+            catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
-            return Ok(_customerRepository.Find(id));
+            var customer = _customerRepository.Find(id);
+            return Ok(customer);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(CustomerViewModel), 200)]
-        public async Task<IActionResult> Put(int id, [FromBody] UpdateCustomerViewModel data, [FromHeader] string token)
+        public IActionResult Put(int id, [FromBody] UpdateCustomerViewModel data, [FromHeader] string token)
         {
             try
             {
-                _tokenService.CheckAccess(token, "Customer", id);
+                ValidateTokenAndAccess(token, "Customer", id);
             }
-            catch (UnauthorizedAccessException exception)
+            catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
-            } 
+                return Unauthorized();
+            }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             data.Id = id;
 
-            return Ok(_customerRepository.Update(data));
+            var updatedCustomer = _customerRepository.Update(data);
+            return Ok(updatedCustomer);
         }
 
         [HttpPut("{id}/help")]
         [ProducesResponseType(typeof(CustomerViewModel), 200)]
-        public async Task<IActionResult> ChooseHelp(int id, string help, [FromHeader] string token)
+        public IActionResult ChooseHelp(int id, string help, [FromHeader] string token)
         {
             try
             {
-                _tokenService.CheckAccess(token, "Customer", id);
+                ValidateTokenAndAccess(token, "Customer", id);
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
-
-            var updateCussstsomerViewModel = new UpdateCustomerViewModel
+            var updateCustomerViewModel = new UpdateCustomerViewModel
             {
                 Id = id,
                 HelpOption = help,
             };
 
-            return Ok(_customerRepository.Update(updateCussstsomerViewModel));
+            var updatedCustomer = _customerRepository.Update(updateCustomerViewModel);
+            return Ok(updatedCustomer);
+        }
+
+        private void ValidateTokenAndAccess(string token, string role, int id)
+        {
+            _tokenService.CheckAccess(token, role, id);
         }
     }
 }

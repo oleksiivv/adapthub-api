@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using adapthub_api.Responses;
 using adapthub_api.Services;
 using adapthub_api.ViewModels;
-using adapthub_api.Responses;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
-using System.ComponentModel.DataAnnotations;
 
 namespace adapthub_api.Controllers
 {
@@ -17,57 +10,54 @@ namespace adapthub_api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthService _userService;
+        private readonly IMailService _mailService;
+        private readonly IConfiguration _configuration;
 
-        private IAuthService _userService;
-        private IMailService _mailService;
-        private IConfiguration _configuration;
         public AuthController(IAuthService userService, IMailService mailService, IConfiguration configuration)
         {
-            _userService = userService;
-            _mailService = mailService;
-            _configuration = configuration;
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _mailService = mailService ?? throw new ArgumentNullException(nameof(mailService));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        // /api/auth/register
         [HttpPost("Register")]
         [ProducesResponseType(typeof(UserManagerResponse), 200)]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterCustomerViewModel model)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterCustomerViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var result = await _userService.RegisterUserAsync(model);
 
                 if (result.IsSuccess)
-                    return Ok(result); // Status Code: 200 
+                    return Ok(result);
 
                 return BadRequest(result);
             }
 
-            return BadRequest("Деякі поля невалдні."); // Status code: 400
+            return BadRequest("Деякі поля невірні.");
         }
 
-        // /api/auth/login
         [HttpPost("Login")]
         [ProducesResponseType(typeof(UserManagerResponse), 200)]
-        public async Task<IActionResult> LoginAsync([FromBody]LoginViewModel model)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var result = await _userService.LoginUserAsync(model);
 
                 if (result.IsSuccess)
                 {
-                    await _mailService.SendEmailAsync(model.Email, "Новий вхід", "<h1>Привіт! Ми помітили новий вхід на ваш акаунт!</h1><p>Сталося це " + DateTime.Now + "</p>");
+                    await _mailService.SendEmailAsync(model.Email, "Новий вхід", $"<h1>Привіт! Ми помітили новий вхід на ваш акаунт!</h1><p>Сталося це {DateTime.Now}</p>");
                     return Ok(result);
                 }
 
                 return BadRequest(result);
             }
 
-            return BadRequest("Деякі поля невалідні.");
+            return BadRequest("Деякі поля невірні.");
         }
 
-        // /api/auth/confirmemail?userid&token
         [HttpGet("ConfirmEmail")]
         [ProducesResponseType(204)]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
@@ -77,15 +67,12 @@ namespace adapthub_api.Controllers
 
             var result = await _userService.ConfirmEmailAsync(userId, token);
 
-            if(result.IsSuccess)
-            {
+            if (result.IsSuccess)
                 return NoContent();
-            }
 
             return BadRequest(result);
         }
 
-        // api/auth/forgetpassword
         [HttpPost("ForgetPassword")]
         [ProducesResponseType(typeof(UserManagerResponse), 200)]
         public async Task<IActionResult> ForgetPassword(string email)
@@ -96,17 +83,16 @@ namespace adapthub_api.Controllers
             var result = await _userService.ForgetPasswordAsync(email);
 
             if (result.IsSuccess)
-                return Ok(result); // 200
+                return Ok(result);
 
-            return BadRequest(result); // 400
+            return BadRequest(result);
         }
 
-        // api/auth/resetpassword
         [HttpPost("ResetPassword")]
         [ProducesResponseType(typeof(UserManagerResponse), 200)]
-        public async Task<IActionResult> ResetPassword([FromForm]ResetCustomerPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword([FromForm] ResetCustomerPasswordViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var result = await _userService.ResetPasswordAsync(model);
 
@@ -116,9 +102,7 @@ namespace adapthub_api.Controllers
                 return BadRequest(result);
             }
 
-            return BadRequest("Деякі поля невалідні.");
+            return BadRequest("Деякі поля невірні.");
         }
-
-
     }
 }

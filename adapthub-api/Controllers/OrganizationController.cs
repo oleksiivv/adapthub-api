@@ -2,13 +2,9 @@
 using adapthub_api.Repositories.Interfaces;
 using adapthub_api.ViewModels.Organization;
 using adapthub_api.Models;
-using adapthub_api.Repositories;
-using adapthub_api.ViewModels.JobRequest;
 using adapthub_api.Services;
-using Newtonsoft.Json.Linq;
+using adapthub_api.ViewModels.JobRequest;
 using SendGrid.Helpers.Errors.Model;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace adapthub_api.Controllers
 {
@@ -21,14 +17,14 @@ namespace adapthub_api.Controllers
 
         public OrganizationController(IOrganizationRepository organizationRepository, ITokenService tokenService)
         {
-            _organizationRepository = organizationRepository;
-            _tokenService = tokenService;
+            _organizationRepository = organizationRepository ?? throw new ArgumentNullException(nameof(organizationRepository));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         [HttpGet]
         public ListOrganizations Get([FromQuery] FilterOrganizationViewModel filter, int from = 0, int to = 10, string sort = "Id", string direction = "asc")
         {
-            return _organizationRepository.List(filter, sort, direction, from, to); 
+            return _organizationRepository.List(filter, sort, direction, from, to);
         }
 
         [HttpGet("{id}")]
@@ -50,11 +46,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_organizationRepository.Create(data));
@@ -72,11 +68,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_organizationRepository.Update(data));
@@ -92,11 +88,11 @@ namespace adapthub_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
             catch (ForbiddenException)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             return Ok(_organizationRepository.Delete(id));
